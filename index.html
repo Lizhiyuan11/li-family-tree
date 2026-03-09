@@ -203,10 +203,19 @@
         };
 
         mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
-
+        // 渲染状态（健在 or 逝世）的辅助函数
+        function renderStatus(deathDate, elementId) {
+            const el = document.getElementById(elementId);
+            if (deathDate) {
+                el.innerText = "故于 " + deathDate;
+                el.className = "status-passed"; // 灰色
+            } else {
+                el.innerText = "健在";
+                el.className = "status-alive"; // 绿色加粗
+            }
+        }
         window.showDetail = function(id) {
-            // 提供默认容错数据，防止点击空节点报错
-            const data = personData[id] || { main: { name: "信息待核实", old: "无", zod: "不详", birth: "不详" }, spouse: null, note: "数据正在持续完善中。" };
+            const data = personData[id] || { main: { name: "信息待核实", old: "无", zod: "不详", birth: "不详" }, spouse: null, note: "数据持续完善中。" };
 
             document.getElementById('hint').style.display = 'none';
             document.getElementById('content').style.display = 'block';
