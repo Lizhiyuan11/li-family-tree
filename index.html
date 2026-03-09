@@ -10,7 +10,7 @@
         .tree-area { flex: 2.5; padding: 20px; overflow: auto; background: white; border-right: 2px solid #d4c4a8; }
         .info-panel { flex: 1; padding: 30px; background: #fff; overflow-y: auto; box-shadow: -2px 0 10px rgba(0,0,0,0.05); min-width: 350px; }
         h1 { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; color: var(--accent); }
-        .field { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding: 5px 0; display: flex; }
+        .field { margin-bottom: 12px; border-bottom: 1px dotted #ccc; padding: 5px 0; display: flex; }
         .label { font-weight: bold; width: 100px; flex-shrink: 0; color: var(--accent); }
         .note-box { background: #f9f4eb; padding: 15px; border-left: 5px solid var(--accent); margin-top: 10px; line-height: 1.6; }
         .node rect { cursor: pointer !important; }
@@ -27,35 +27,28 @@
             LSZ[一世：李世忠]
             LSA[一世：李世安]
 
-            %% 第二代
+            %% 第二代：李世和支系
             LSH --> LC[二世：李成 & 周秀英]
             LSH --> LM[二世：李明 & 路正琴]
             LSH --> LY[二世：李裕 & 王秀兰]
             LSH --> LR[二世：李荣 & 王淑琴]
             LSH --> LH[二世：李华 & 王萍]
             
+            %% 第二代：李世忠支系
             LSZ --> LXW[二世：李学文 & 董壁莲]
             LSZ --> LXV[二世：李效文 & 周玉梅]
             LSZ --> LXM[二世：李学民 & 姚菊香]
             
+            %% 第二代：李世安支系
             LSA --> LP[二世：李鹏 & 罗氏]
 
-            %% 第三代示例 (根据文档连接)
+            %% 第三代及以后 (示例)
             LC --> LJH[三世：李军红 & 庞莉果]
-            LM --> LZL[三世：李志龙 & 雒连霞]
-            LXW --> LCJ[三世：李缠军 & 姚小红]
-            LP --> LHH[三世：李红红 & 马顺会]
-
-            %% 第四代示例
             LJH --> LTF[四世：李腾飞 & 王亚文]
-            LCJ --> LK[四世：李凯]
-            LHH --> LN[四世：李娜]
-
-            %% 第五代
             LTF --> LYH[五世：李钰涵]
             LTF --> LYX[五世：李钰渲]
 
-            %% 绑定点击事件 (必须确保每个 ID 都在下面 data 中有对应)
+            %% --- 关键：必须为每一个 ID 绑定点击事件 ---
             click LSH showDetail
             click LSZ showDetail
             click LSA showDetail
@@ -69,12 +62,7 @@
             click LXM showDetail
             click LP showDetail
             click LJH showDetail
-            click LZL showDetail
-            click LCJ showDetail
-            click LHH showDetail
             click LTF showDetail
-            click LK showDetail
-            click LN showDetail
             click LYH showDetail
             click LYX showDetail
 
@@ -82,49 +70,60 @@
         </div>
     </div>
     <div class="info-panel">
-        <div id="hint" class="hint-text">📜 点击姓名查看档案</div>
+        <div id="hint" class="hint-text">📜 点击姓名查看详细档案</div>
         <div id="content" style="display:none">
             <h2 id="m_name" style="color:var(--accent); border-bottom: 2px solid var(--accent); padding-bottom:10px;"></h2>
+            <div class="field"><span class="label">配偶姓名：</span><span id="m_spouse" style="font-weight:bold; color:#d32f2f;"></span></div>
             <div class="field"><span class="label">曾用名：</span><span id="m_old"></span></div>
             <div class="field"><span class="label">属相：</span><span id="m_zod"></span></div>
             <div class="field"><span class="label">出生日期：</span><span id="m_birth"></span></div>
-            <div class="field"><span class="label">逝世日期：</span><span id="m_death"></span></div>
-            <div class="field"><span class="label">备注：</span></div>
+            <div class="field"><span class="label">生平备注：</span></div>
             <div id="m_note" class="note-box"></div>
         </div>
     </div>
 
     <script>
-        // 确保 Key 与上面的 ID 完全一致 [cite: 109, 111, 114, 116, 375, 377, 393, 395, 398, 400, 411, 413, 509, 511, 559, 561]
-        const data = {
-            "LSH": { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22", death: "1996.09.21", note: "始祖。配偶张玉莲 [cite: 559, 561, 564, 566]。" },
-            "LSZ": { name: "李世忠", old: "土生", zod: "不详", birth: "不详", death: "不详", note: "始祖 [cite: 541, 543]。" },
-            "LSA": { name: "李世安", old: "不详", zod: "不详", birth: "不详", death: "不详", note: "始祖。" },
-            "LC": { name: "李成", old: "海娃", zod: "蛇", birth: "1953.10.20", death: "健在", note: "配偶周秀英 [cite: 375, 377, 380, 382]。" },
-            "LM": { name: "李明", old: "法海", zod: "羊", birth: "1955.07.25", death: "健在", note: "配偶路正琴 [cite: 393, 395, 398, 400]。" },
-            "LY": { name: "李裕", old: "鲁海", zod: "鸡", birth: "1957.06.19", death: "2018.10.29", note: "配偶王秀兰 [cite: 411, 413, 417, 419]。" },
-            "LXW": { name: "李学文", old: "写写", zod: "牛", birth: "1949.04.05", death: "健在", note: "配偶罗氏 [cite: 509, 511, 514, 516]。" },
-            "LCJ": { name: "李缠军", old: "缠军", zod: "鼠", birth: "1984.05.02", death: "健在", note: "配偶姚小红 [cite: 109, 111, 114, 116]。" },
-            "LTF": { name: "李腾飞", old: "腾飞", zod: "兔", birth: "1999.10.10", death: "健在", note: "配偶王亚文。育有钰涵、钰渲 [cite: 153, 155, 157, 159]。" },
-            "LK": { name: "李凯", old: "凯凯", zod: "鸡", birth: "2006.06.03", death: "健在", note: "曾孙辈 [cite: 5, 7, 9, 11]。" },
-            "LN": { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29", death: "健在", note: "曾孙辈 [cite: 13, 15, 17, 19]。" },
-            "LYH": { name: "李钰涵", old: "无", zod: "不详", birth: "不详", death: "健在", note: "第五代。" },
-            "LYX": { name: "李钰渲", old: "无", zod: "不详", birth: "不详", death: "健在", note: "第五代。" }
+        // 数据库中的 Key 必须与上面的 ID 完全一致
+        const personData = {
+            "LSH": { name: "李世和", spouse: "张玉莲", old: "福生", zod: "牛", birth: "1926.06.22", note: "配偶张玉莲(1932-2014)。" },
+            "LSZ": { name: "李世忠", spouse: "不详", old: "土生", zod: "不详", birth: "不详", note: "一世祖。" },
+            "LSA": { name: "李世安", spouse: "不详", old: "不详", zod: "不详", birth: "不详", note: "一世祖。" },
+            
+            // 世和支系
+            "LC": { name: "李成", spouse: "周秀英", old: "海娃", zod: "蛇", birth: "1953.10.20", note: "周秀英属鼠(1959.10.28生)。" },
+            "LM": { name: "李明", spouse: "路正琴", old: "法海", zod: "羊", birth: "1955.07.25", note: "路正琴属虎(1962.12.27生)。" },
+            "LY": { name: "李裕", spouse: "王秀兰", old: "鲁海", zod: "鸡", birth: "1957.06.19", note: "王秀兰属龙(1964.12.15生)。" },
+            "LR": { name: "李荣", spouse: "王淑琴", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
+            "LH": { name: "李华", spouse: "王萍", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
+            
+            // 世忠支系
+            "LXW": { name: "李学文", spouse: "董壁莲", old: "写写", zod: "牛", birth: "1949.04.05", note: "董壁莲属羊。" },
+            "LXV": { name: "李效文", spouse: "周玉梅", old: "自娃", zod: "蛇", birth: "1953.08.16", note: "二世成员。" },
+            "LXM": { name: "李学民", spouse: "姚菊香", old: "鲁娃", zod: "羊", birth: "1955.08.05", note: "二世成员。" },
+            
+            // 世安支系
+            "LP": { name: "李鹏", spouse: "罗氏", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
+
+            // 后代示例
+            "LJH": { name: "李军红", spouse: "庞莉果", old: "不详", zod: "不详", birth: "不详", note: "三世成员。" },
+            "LTF": { name: "李腾飞", spouse: "王亚文", old: "无", zod: "兔", birth: "1999.10.10", note: "四世成员。" },
+            "LYH": { name: "李钰涵", spouse: "无", old: "无", zod: "不详", birth: "不详", note: "五世成员。" },
+            "LYX": { name: "李钰渲", spouse: "无", old: "无", zod: "不详", birth: "不详", note: "五世成员。" }
         };
 
         mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
 
         window.showDetail = function(id) {
-            const p = data[id];
+            const p = personData[id];
             if(p) {
                 document.getElementById('hint').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
                 document.getElementById('m_name').innerText = p.name;
+                document.getElementById('m_spouse').innerText = p.spouse || "无";
                 document.getElementById('m_old').innerText = p.old || "无";
                 document.getElementById('m_zod').innerText = p.zod || "不详";
                 document.getElementById('m_birth').innerText = p.birth || "不详";
-                document.getElementById('m_death').innerText = p.death || "无";
-                document.getElementById('m_note').innerText = p.note || "暂无备注。";
+                document.getElementById('m_note').innerText = p.note || "暂无更多生平描述。";
             }
         };
     </script>
