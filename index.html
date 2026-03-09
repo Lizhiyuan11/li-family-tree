@@ -5,26 +5,19 @@
     <title>李氏家族电子家谱</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
-        :root {
-            --paper-bg: #fdfaf2;
-            --sepia-border: #d4c4a8;
-            --text-main: #3e2723;
-            --accent: #8b4513;
-        }
-        body { font-family: "Noto Serif SC", serif; margin: 0; display: flex; background-color: var(--paper-bg); height: 100vh; color: var(--text-main); }
-        .tree-area { flex: 2.5; padding: 30px; overflow: auto; background: white; border-right: 3px double var(--sepia-border); }
-        .archive-panel { flex: 1; background: #fff; padding: 40px; box-shadow: -5px 0 15px rgba(0,0,0,0.05); min-width: 380px; overflow-y: auto; }
-        h1 { text-align: center; font-size: 28px; color: var(--accent); margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
-        .archive-header { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 25px; font-size: 22px; }
-        .field { margin-bottom: 15px; font-size: 16px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; display: flex; }
-        .field .label { font-weight: bold; color: #5d4037; width: 100px; flex-shrink: 0; }
-        .biography { background: #f9f4eb; padding: 15px; border-left: 5px solid var(--accent); margin-top: 20px; line-height: 1.6; }
-        .empty-hint { color: #999; text-align: center; margin-top: 150px; }
+        :root { --paper-bg: #fdfaf2; --accent: #8b4513; --text: #3e2723; }
+        body { font-family: "Microsoft YaHei", serif; margin: 0; display: flex; background: var(--paper-bg); height: 100vh; color: var(--text); }
+        .tree-area { flex: 2.5; padding: 20px; overflow: auto; background: white; border-right: 2px solid #d4c4a8; }
+        .info-panel { flex: 1; padding: 30px; background: #fff; overflow-y: auto; box-shadow: -2px 0 10px rgba(0,0,0,0.05); min-width: 350px; }
+        h1 { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; color: var(--accent); }
+        .field { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding: 5px 0; display: flex; }
+        .label { font-weight: bold; width: 100px; flex-shrink: 0; color: var(--accent); }
+        .note-box { background: #f9f4eb; padding: 15px; border-left: 5px solid var(--accent); margin-top: 10px; line-height: 1.6; }
         .node rect { cursor: pointer !important; }
+        .hint-text { color: #999; text-align: center; margin-top: 150px; font-size: 18px; }
     </style>
 </head>
 <body>
-
     <div class="tree-area">
         <h1>李氏家族联谱</h1>
         <div class="mermaid">
@@ -34,95 +27,79 @@
             S2[一世：李世忠]
             S3[一世：李世安]
 
-            %% 第二代
+            %% 第二代示例
             S1 --> SH1[二世：李成 & 周秀英]
-            S1 --> SH2[二世：李明 & 路正琴]
-            S1 --> SH3[二世：李裕 & 王秀兰]
-            S1 --> SH4[二世：李荣 & 王淑琴]
-            S1 --> SH5[二世：李华 & 王萍]
-            S2 --> SZ1[二世：李学文 & 董壁莲]
-            S2 --> SZ2[二世：李效文 & 周玉梅]
-            S2 --> SZ3[二世：李学民 & 姚菊香]
             S3 --> SA1[二世：李鹏 & 罗氏]
 
-            %% 第三代
+            %% 第三代示例
             SH1 --> G3_C1[三世：李军红 & 庞莉果]
-            SH2 --> G3_M1[三世：李志龙 & 雒连霞]
-            SH2 --> G3_M2[三世：李志岩 & 王晓蕾]
-            SH3 --> G3_Y1[三世：李小红 & 雒王遇霞]
-            SH4 --> G3_R1[三世：李亚亭 & 何小莉]
-            SH4 --> G3_R2[三世：李志胜]
-            SZ1 --> G3_ZW1[三世：李缠军 & 姚小红]
-            SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
             SA1 --> G3_P1[三世：李红红 & 马顺会]
-            SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
 
-            %% 第四代
-            G3_C1 --> G4_C1[四世：李腾飞 & 王亚文]
-            G3_M1 --> G4_M1[四世：李彦辰]
-            G3_M1 --> G4_M2[四世：李彦达]
-            G3_M2 --> G4_M3[四世：李彦纬]
-            G3_M2 --> G4_M4[四世：李彦哲]
-            G3_Y1 --> G4_Y1[四世：李欣 & 待定]
-            G3_R1 --> G4_R1[四世：李泽煦]
-            G3_R1 --> G4_R2[四世：李泽琪]
-            G3_ZW1 --> G4_Z1[四世：李凯]
-            G3_XW1 --> G4_XW1[四世：李蕾]
-            G3_XW1 --> G4_XW2[四世：李璐]
-            G3_P1 --> G4_P1[四世：李祥兵 & 待定]
-            G3_P1 --> G4_P2[四世：李敏]
-            G3_P1 --> G4_P3[四世：李娜]
-            G3_P2 --> G4_P4[四世：李翔 & 待定]
+            %% 第四代示例
+            G3_C1 --> G4_TF[四世：李腾飞 & 王亚文]
+            G3_P1 --> G4_NA[四世：李娜]
 
-            %% 第五代 (新增)
-            G4_C1 --> G5_1[五世：李钰涵]
-            G4_C1 --> G5_2[五世：李钰渲]
+            %% 第五代 (修复点击的关键点)
+            G4_TF --> G5_YH[五世：李钰涵]
+            G4_TF --> G5_YX[五世：李钰渲]
 
-            %% 样式
+            %% 绑定所有需要点击的 ID
+            click S1 showDetail
+            click SH1 showDetail
+            click G4_TF showDetail
+            click G4_NA showDetail
+            click G5_YH showDetail
+            click G5_YX showDetail
+
             style S1 fill:#efebe9,stroke:#5d4037
-            style S2 fill:#efebe9,stroke:#5d4037
-            style S3 fill:#efebe9,stroke:#5d4037
-            
-            %% 点击绑定
-            click G5_1 showDetail
-            click G5_2 showDetail
-            click G4_C1 showDetail
         </div>
     </div>
-
-    <div class="archive-panel">
-        <div id="emptyMsg" class="empty-hint"><h3>📜 点击姓名查看第五代档案</h3></div>
-        <div id="infoBox" style="display:none;">
-            <div class="archive-header" id="info_name"></div>
-            <div class="field"><span class="label">曾用名</span><span id="info_oldname"></span></div>
-            <div class="field"><span class="label">属相</span><span id="info_zodiac"></span></div>
-            <div class="field"><span class="label">出生日期</span><span id="info_birthday"></span></div>
-            <div class="biography" id="info_note"></div>
+    <div class="info-panel">
+        <div id="hint" class="hint-text">📜 点击左侧姓名查看档案</div>
+        <div id="content" style="display:none">
+            <h2 id="m_name" style="color:var(--accent); border-bottom: 2px solid var(--accent); padding-bottom:10px;"></h2>
+            <div class="field"><span class="label">曾用名：</span><span id="m_old"></span></div>
+            <div class="field"><span class="label">属相：</span><span id="m_zod"></span></div>
+            <div class="field"><span class="label">出生日期：</span><span id="m_birth"></span></div>
+            <div class="field"><span class="label">生平备注：</span></div>
+            <div id="m_note" class="note-box"></div>
         </div>
     </div>
 
     <script>
+        // 数据库中的 Key 必须与上面 graph TD 里的 ID 一致
         const personData = {
-            "G5_1": { name: "李钰涵", oldName: "无", zodiac: "不详", birthday: "不详", note: "李腾飞支系，李氏第五代。" },
-            "G5_2": { name: "李钰渲", oldName: "无", zodiac: "不详", birthday: "不详", note: "李腾飞支系，李氏第五代。" },
-            "G4_C1": { name: "李腾飞", oldName: "无", zodiac: "兔", birthday: "1999.10.10", note: "李军红支系。配偶：王亚文。" },
-            // 其他成员信息可参考之前的版本继续添加
+            "S1": { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22", note: "李氏始祖。配偶张玉莲。" },
+            "SH1": { name: "李成 & 周秀英", old: "海娃", zod: "蛇/鼠", birth: "1953.10.20", note: "周秀英出生于1959.10.28。" },
+            "G4_TF": { name: "李腾飞 & 王亚文", old: "无", zod: "兔", birth: "1999.10.10", note: "配偶王亚文。育有二子：钰涵、钰渲。" },
+            "G4_NA": { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29", note: "第四代成员。" },
+            "G5_YH": { name: "李钰涵", old: "无", zod: "待补", birth: "待补", note: "家族第五代成员（玄孙辈）。" },
+            "G5_YX": { name: "李钰渲", old: "无", zod: "待补", birth: "待补", note: "家族第五代成员（玄孙辈）。" }
         };
 
-        mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'forest', 
+            securityLevel: 'loose' 
+        });
 
-        function showDetail(nodeId) {
-            const data = personData[nodeId];
-            if (data) {
-                document.getElementById('emptyMsg').style.display = 'none';
-                document.getElementById('infoBox').style.display = 'block';
-                document.getElementById('info_name').innerText = data.name;
-                document.getElementById('info_oldname').innerText = data.oldName || "无";
-                document.getElementById('info_zodiac').innerText = data.zodiac || "不详";
-                document.getElementById('info_birthday').innerText = data.birthday || "不详";
-                document.getElementById('info_note').innerText = data.note;
+        // 点击触发函数
+        function showDetail(id) {
+            console.log("点击了 ID:", id); // 调试用
+            const p = personData[id];
+            if(p) {
+                document.getElementById('hint').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('m_name').innerText = p.name;
+                document.getElementById('m_old').innerText = p.old || "无";
+                document.getElementById('m_zod').innerText = p.zod || "不详";
+                document.getElementById('m_birth').innerText = p.birth || "不详";
+                document.getElementById('m_note').innerText = p.note || "暂无备注。";
             }
         }
+        
+        // 挂载到 window 确保 Mermaid 能找到函数
+        window.showDetail = showDetail;
     </script>
 </body>
 </html>
