@@ -2,121 +2,130 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>李氏家谱在线版</title>
+    <title>李氏家族电子家谱</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
-        body { font-family: "Microsoft YaHei", sans-serif; margin: 0; display: flex; background-color: #f4f4f4; height: 100vh; }
-        
-        /* 左侧家谱图区域 */
-        .tree-container { flex: 3; padding: 20px; overflow: auto; background: white; }
-        
-        /* 右侧详情面板 */
-        .detail-panel { 
-            flex: 1; 
-            background: #fff; 
-            border-left: 2px solid #e0cda9; 
-            padding: 30px; 
-            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
-            min-width: 300px;
+        :root {
+            --paper-bg: #fdfaf2;
+            --sepia-border: #d4c4a8;
+            --text-main: #3e2723;
+            --accent: #8b4513;
         }
-        
-        h1 { color: #333; text-align: center; }
-        .detail-header { color: #8b4513; border-bottom: 2px solid #8b4513; padding-bottom: 10px; margin-bottom: 20px; }
-        .info-item { margin-bottom: 15px; font-size: 16px; text-align: left; }
-        .label { font-weight: bold; color: #555; width: 90px; display: inline-block; }
-        
-        /* 提示文字 */
-        .placeholder { color: #999; font-style: italic; margin-top: 50px; text-align: center; }
-        
-        /* 针对 Mermaid 节点的样式优化 */
+        body { font-family: "Noto Serif SC", serif; margin: 0; display: flex; background-color: var(--paper-bg); height: 100vh; color: var(--text-main); }
+        .tree-area { flex: 2.5; padding: 30px; overflow: auto; background: white; border-right: 3px double var(--sepia-border); }
+        .archive-panel { flex: 1; background: #fff; padding: 40px; box-shadow: -5px 0 15px rgba(0,0,0,0.05); min-width: 380px; overflow-y: auto; }
+        h1 { text-align: center; font-size: 28px; color: var(--accent); margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
+        .archive-header { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 25px; font-size: 22px; }
+        .field { margin-bottom: 15px; font-size: 16px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; display: flex; }
+        .field .label { font-weight: bold; color: #5d4037; width: 100px; flex-shrink: 0; }
+        .biography { background: #f9f4eb; padding: 15px; border-left: 5px solid var(--accent); margin-top: 20px; line-height: 1.6; }
+        .empty-hint { color: #999; text-align: center; margin-top: 150px; }
         .node rect { cursor: pointer !important; }
     </style>
 </head>
 <body>
 
-    <div class="tree-container">
-        <h1>李氏家谱世系图</h1>
-        <div class="mermaid" id="familyTree">
+    <div class="tree-area">
+        <h1>李氏家族联谱</h1>
+        <div class="mermaid">
             graph TD
-            %% 辈分 + 姓名 逻辑展示
-            %% 点击事件定义格式：click 节点ID 函数名
+            %% 第一代
+            S1[一世：李世和]
+            S2[一世：李世忠]
+            S3[一世：李世安]
+
+            %% 第二代
+            S1 --> SH1[二世：李成 & 周秀英]
+            S1 --> SH2[二世：李明 & 路正琴]
+            S1 --> SH3[二世：李裕 & 王秀兰]
+            S1 --> SH4[二世：李荣 & 王淑琴]
+            S1 --> SH5[二世：李华 & 王萍]
+            S2 --> SZ1[二世：李学文 & 董壁莲]
+            S2 --> SZ2[二世：李效文 & 周玉梅]
+            S2 --> SZ3[二世：李学民 & 姚菊香]
+            S3 --> SA1[二世：李鹏 & 罗氏]
+
+            %% 第三代
+            SA1 --> G3_P1[三世：李红红 & 马顺会]
+            SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
+            SH1 --> G3_C1[三世：李军红 & 庞莉果]
+            SH3 --> G3_Y1[三世：李小红 & 雒王遇霞]
+            SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
+            SH4 --> G3_R1[三世：李亚亭 & 何小莉]
+            SH4 --> G3_R2[三世：李志胜]
+            SH2 --> G3_M1[三世：李志龙 & 雒连霞]
+            SH2 --> G3_M2[三世：李志岩 & 王晓蕾]
+            SZ1 --> G3_ZW1[三世：李缠军 & 姚小红]
+
+            %% 第四代 (新增)
+            G3_P1 --> G4_P1[四世：李祥兵 & 待定]
+            G3_P1 --> G4_P2[四世：李敏]
+            G3_P1 --> G4_P3[四世：李娜]
+            G3_P2 --> G4_P4[四世：李翔 & 待定]
+            G3_C1 --> G4_C1[四世：李腾飞 & 王亚文]
+            G3_Y1 --> G4_Y1[四世：李欣 & 待定]
+            G3_XW1 --> G4_XW1[四世：李蕾]
+            G3_XW1 --> G4_XW2[四世：李璐]
+            G3_R1 --> G4_R1[四世：李泽煦]
+            G3_R1 --> G4_R2[四世：李泽琪]
+            G3_M1 --> G4_M1[四世：李彦辰]
+            G3_M1 --> G4_M2[四世：李彦达]
+            G3_M2 --> G4_M3[四世：李彦纬]
+            G3_M2 --> G4_M4[四世：李彦哲]
+            G3_ZW1 --> G4_Z1[四世：李凯]
+            G3_ZW1 --> G4_Z2[四世：李洁]
+
+            %% 样式
+            style S1 fill:#efebe9,stroke:#5d4037
+            style S2 fill:#efebe9,stroke:#5d4037
+            style S3 fill:#efebe9,stroke:#5d4037
             
-            G1[始祖：李世和] --> G2_1[二世：李成]
-            G1 --> G2_2[二世：李明]
-            
-            G2_1 --> G3_1[三世：李学文]
-            G2_1 --> G3_2[三世：李志岩]
-            
-            %% 绑定点击事件
-            click G3_1 showDetail
-            click G1 showDetail
-            click G2_1 showDetail
-            
-            %% 样式自定义
-            style G1 fill:#f96,stroke:#333,stroke-width:2px
+            %% 点击绑定
+            click G4_P3 showDetail
+            click G4_Z1 showDetail
+            click G4_M1 showDetail
+            click G4_M2 showDetail
+            click G4_M3 showDetail
+            click G4_M4 showDetail
+            click G4_C1 showDetail
         </div>
     </div>
 
-    <div class="detail-panel" id="detailPanel">
-        <div id="emptyMsg" class="placeholder">点击家谱姓名查看详细资料</div>
+    <div class="archive-panel">
+        <div id="emptyMsg" class="empty-hint"><h3>📜 点击姓名查看第四代档案</h3></div>
         <div id="infoBox" style="display:none;">
-            <h2 class="detail-header" id="info_name">人员信息</h2>
-            <div class="info-item"><span class="label">曾用名：</span><span id="info_oldname"></span></div>
-            <div class="info-item"><span class="label">出生日期：</span><span id="info_birthday"></span></div>
-            <div class="info-item"><span class="label">属相：</span><span id="info_zodiac"></span></div>
-            <div class="info-item"><span class="label">逝世日期：</span><span id="info_death"></span></div>
-            <div class="info-item"><span class="label">备注：</span><p id="info_note"></p></div>
+            <div class="archive-header" id="info_name"></div>
+            <div class="field"><span class="label">曾用名</span><span id="info_oldname"></span></div>
+            <div class="field"><span class="label">属相</span><span id="info_zodiac"></span></div>
+            <div class="field"><span class="label">出生日期</span><span id="info_birthday"></span></div>
+            <div class="biography" id="info_note"></div>
         </div>
     </div>
 
     <script>
-        // 人员详细数据数据库 (可以在此不断添加)
         const personData = {
-            "G3_1": {
-                name: "三世：李学文",
-                oldName: "写写",
-                birthday: "1949.4.5",
-                zodiac: "牛",
-                death: "健在",
-                note: "这里可以写李学文本人的生平简介或家庭状况。"
-            },
-            "G1": {
-                name: "始祖：李世和",
-                oldName: "无",
-                birthday: "1890.1.1",
-                zodiac: "虎",
-                death: "1960.5.20",
-                note: "李氏家族始迁祖。"
-            },
-            "G2_1": {
-                name: "二世：李成",
-                oldName: "李成龙",
-                birthday: "1920.3.15",
-                zodiac: "猴",
-                death: "1995.10.10",
-                note: "李世和长子。"
-            }
+            "G4_P3": { name: "李娜", oldName: "梦娟", zodiac: "虎", birthday: "1998.08.29", note: "李红红支系女儿。" },
+            "G4_Z1": { name: "李凯", oldName: "凯凯", zodiac: "鸡", birthday: "2006.06.03", note: "李缠军支系。" },
+            "G4_M1": { name: "李彦辰", oldName: "无", zodiac: "羊", birthday: "2015.01.27", note: "李志龙支系。" },
+            "G4_M2": { name: "李彦达", oldName: "无", zodiac: "猪", birthday: "2019.01.04", note: "李志龙支系。" },
+            "G4_M3": { name: "李彦纬", oldName: "无", zodiac: "马", birthday: "2014.10.29", note: "李志岩支系。" },
+            "G4_M4": { name: "李彦哲", oldName: "无", zodiac: "狗", birthday: "2018.11.30", note: "李志岩支系。" },
+            "G4_C1": { name: "李腾飞", oldName: "无", zodiac: "不详", birthday: "不详", note: "李军红支系。配偶：王亚文。" },
+            "G4_P1": { name: "李祥兵", oldName: "无", zodiac: "不详", birthday: "不详", note: "李红红支系。配偶：待定。" },
+            // 其他成员信息可依此类推添加...
         };
 
-        // 初始化 Mermaid
-        mermaid.initialize({ 
-            startOnLoad: true, 
-            theme: 'forest',
-            securityLevel: 'loose' // 必须设置为 loose 才能触发点击事件
-        });
+        mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
 
-        // 点击节点时调用的函数
         function showDetail(nodeId) {
             const data = personData[nodeId];
             if (data) {
                 document.getElementById('emptyMsg').style.display = 'none';
                 document.getElementById('infoBox').style.display = 'block';
-                
                 document.getElementById('info_name').innerText = data.name;
-                document.getElementById('info_oldname').innerText = data.oldName;
-                document.getElementById('info_birthday').innerText = data.birthday;
-                document.getElementById('info_zodiac').innerText = data.zodiac;
-                document.getElementById('info_death').innerText = data.death;
+                document.getElementById('info_oldname').innerText = data.oldName || "无";
+                document.getElementById('info_zodiac').innerText = data.zodiac || "不详";
+                document.getElementById('info_birthday').innerText = data.birthday || "不详";
                 document.getElementById('info_note').innerText = data.note;
             }
         }
