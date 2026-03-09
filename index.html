@@ -46,34 +46,37 @@
             S3 --> SA1[二世：李鹏 & 罗氏]
 
             %% 第三代
-            SA1 --> G3_P1[三世：李红红 & 马顺会]
-            SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
             SH1 --> G3_C1[三世：李军红 & 庞莉果]
-            SH3 --> G3_Y1[三世：李小红 & 雒王遇霞]
-            SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
-            SH4 --> G3_R1[三世：李亚亭 & 何小莉]
-            SH4 --> G3_R2[三世：李志胜]
             SH2 --> G3_M1[三世：李志龙 & 雒连霞]
             SH2 --> G3_M2[三世：李志岩 & 王晓蕾]
+            SH3 --> G3_Y1[三世：李小红 & 雒王遇霞]
+            SH4 --> G3_R1[三世：李亚亭 & 何小莉]
+            SH4 --> G3_R2[三世：李志胜]
             SZ1 --> G3_ZW1[三世：李缠军 & 姚小红]
+            SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
+            SA1 --> G3_P1[三世：李红红 & 马顺会]
+            SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
 
-            %% 第四代 (新增)
-            G3_P1 --> G4_P1[四世：李祥兵 & 待定]
-            G3_P1 --> G4_P2[四世：李敏]
-            G3_P1 --> G4_P3[四世：李娜]
-            G3_P2 --> G4_P4[四世：李翔 & 待定]
+            %% 第四代
             G3_C1 --> G4_C1[四世：李腾飞 & 王亚文]
-            G3_Y1 --> G4_Y1[四世：李欣 & 待定]
-            G3_XW1 --> G4_XW1[四世：李蕾]
-            G3_XW1 --> G4_XW2[四世：李璐]
-            G3_R1 --> G4_R1[四世：李泽煦]
-            G3_R1 --> G4_R2[四世：李泽琪]
             G3_M1 --> G4_M1[四世：李彦辰]
             G3_M1 --> G4_M2[四世：李彦达]
             G3_M2 --> G4_M3[四世：李彦纬]
             G3_M2 --> G4_M4[四世：李彦哲]
+            G3_Y1 --> G4_Y1[四世：李欣 & 待定]
+            G3_R1 --> G4_R1[四世：李泽煦]
+            G3_R1 --> G4_R2[四世：李泽琪]
             G3_ZW1 --> G4_Z1[四世：李凯]
-            G3_ZW1 --> G4_Z2[四世：李洁]
+            G3_XW1 --> G4_XW1[四世：李蕾]
+            G3_XW1 --> G4_XW2[四世：李璐]
+            G3_P1 --> G4_P1[四世：李祥兵 & 待定]
+            G3_P1 --> G4_P2[四世：李敏]
+            G3_P1 --> G4_P3[四世：李娜]
+            G3_P2 --> G4_P4[四世：李翔 & 待定]
+
+            %% 第五代 (新增)
+            G4_C1 --> G5_1[五世：李钰涵]
+            G4_C1 --> G5_2[五世：李钰渲]
 
             %% 样式
             style S1 fill:#efebe9,stroke:#5d4037
@@ -81,18 +84,14 @@
             style S3 fill:#efebe9,stroke:#5d4037
             
             %% 点击绑定
-            click G4_P3 showDetail
-            click G4_Z1 showDetail
-            click G4_M1 showDetail
-            click G4_M2 showDetail
-            click G4_M3 showDetail
-            click G4_M4 showDetail
+            click G5_1 showDetail
+            click G5_2 showDetail
             click G4_C1 showDetail
         </div>
     </div>
 
     <div class="archive-panel">
-        <div id="emptyMsg" class="empty-hint"><h3>📜 点击姓名查看第四代档案</h3></div>
+        <div id="emptyMsg" class="empty-hint"><h3>📜 点击姓名查看第五代档案</h3></div>
         <div id="infoBox" style="display:none;">
             <div class="archive-header" id="info_name"></div>
             <div class="field"><span class="label">曾用名</span><span id="info_oldname"></span></div>
@@ -104,15 +103,10 @@
 
     <script>
         const personData = {
-            "G4_P3": { name: "李娜", oldName: "梦娟", zodiac: "虎", birthday: "1998.08.29", note: "李红红支系女儿。" },
-            "G4_Z1": { name: "李凯", oldName: "凯凯", zodiac: "鸡", birthday: "2006.06.03", note: "李缠军支系。" },
-            "G4_M1": { name: "李彦辰", oldName: "无", zodiac: "羊", birthday: "2015.01.27", note: "李志龙支系。" },
-            "G4_M2": { name: "李彦达", oldName: "无", zodiac: "猪", birthday: "2019.01.04", note: "李志龙支系。" },
-            "G4_M3": { name: "李彦纬", oldName: "无", zodiac: "马", birthday: "2014.10.29", note: "李志岩支系。" },
-            "G4_M4": { name: "李彦哲", oldName: "无", zodiac: "狗", birthday: "2018.11.30", note: "李志岩支系。" },
-            "G4_C1": { name: "李腾飞", oldName: "无", zodiac: "不详", birthday: "不详", note: "李军红支系。配偶：王亚文。" },
-            "G4_P1": { name: "李祥兵", oldName: "无", zodiac: "不详", birthday: "不详", note: "李红红支系。配偶：待定。" },
-            // 其他成员信息可依此类推添加...
+            "G5_1": { name: "李钰涵", oldName: "无", zodiac: "不详", birthday: "不详", note: "李腾飞支系，李氏第五代。" },
+            "G5_2": { name: "李钰渲", oldName: "无", zodiac: "不详", birthday: "不详", note: "李腾飞支系，李氏第五代。" },
+            "G4_C1": { name: "李腾飞", oldName: "无", zodiac: "兔", birthday: "1999.10.10", note: "李军红支系。配偶：王亚文。" },
+            // 其他成员信息可参考之前的版本继续添加
         };
 
         mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
