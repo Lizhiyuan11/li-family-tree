@@ -6,15 +6,31 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         :root { --paper-bg: #fdfaf2; --accent: #8b4513; --text: #3e2723; }
-        body { font-family: "Microsoft YaHei", serif; margin: 0; display: flex; background: var(--paper-bg); height: 100vh; color: var(--text); }
-        .tree-area { flex: 2.5; padding: 20px; overflow: auto; background: white; border-right: 2px solid #d4c4a8; }
-        .info-panel { flex: 1; padding: 30px; background: #fff; overflow-y: auto; box-shadow: -2px 0 10px rgba(0,0,0,0.05); min-width: 350px; }
-        h1 { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; color: var(--accent); }
-        .field { margin-bottom: 12px; border-bottom: 1px dotted #ccc; padding: 5px 0; display: flex; }
-        .label { font-weight: bold; width: 100px; flex-shrink: 0; color: var(--accent); }
-        .note-box { background: #f9f4eb; padding: 15px; border-left: 5px solid var(--accent); margin-top: 10px; line-height: 1.6; }
-        .node rect { cursor: pointer !important; }
-        .hint-text { color: #999; text-align: center; margin-top: 150px; font-size: 18px; }
+        body { font-family: "Microsoft YaHei", serif; margin: 0; display: flex; background: var(--paper-bg); height: 100vh; overflow: hidden; }
+        
+        /* 左侧家谱树区域：开启强制滚动，防止大图被裁切 */
+        .tree-area { flex: 2; padding: 20px; overflow: auto; background: white; border-right: 3px double #d4c4a8; width: 100%; height: 100%; }
+        
+        /* 强制 Mermaid 的 SVG 自由缩放延展，不被隐藏 */
+        .mermaid { min-width: 800px; padding-bottom: 100px; }
+        .mermaid svg { max-width: none !important; height: auto; }
+        
+        /* 右侧双人档案面板 */
+        .info-panel { flex: 1.2; padding: 25px; background: #fff; overflow-y: auto; box-shadow: -5px 0 15px rgba(0,0,0,0.05); min-width: 400px; }
+        h1 { text-align: center; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        
+        /* 夫妻信息并列布局 */
+        .couple-container { display: flex; gap: 15px; margin-top: 20px; }
+        .person-card { flex: 1; background: #fdfaf2; border: 1px solid #e0d5c1; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .person-card h3 { margin-top: 0; color: #d32f2f; border-bottom: 2px solid #e0d5c1; padding-bottom: 8px; font-size: 18px; }
+        
+        .field { margin-bottom: 10px; font-size: 15px; display: flex; border-bottom: 1px dotted #eee; padding-bottom: 5px; }
+        .label { font-weight: bold; width: 75px; color: var(--accent); flex-shrink: 0; }
+        
+        .note-box { background: #f1ede4; padding: 15px; margin-top: 20px; font-size: 15px; border-left: 4px solid var(--accent); line-height: 1.6; border-radius: 0 4px 4px 0; }
+        .hint-text { color: #999; text-align: center; margin-top: 40%; font-size: 18px; letter-spacing: 2px; }
+        .node rect { cursor: pointer !important; transition: 0.2s; }
+        .node:hover rect { fill: #fdf5e6 !important; stroke: #d32f2f !important; stroke-width: 2px !important; }
     </style>
 </head>
 <body>
@@ -23,32 +39,36 @@
         <div class="mermaid">
             graph TD
             %% 第一代
-            LSH[一世：李世和]
+            LSH[一世：李世和 & 张玉莲]
             LSZ[一世：李世忠]
             LSA[一世：李世安]
 
-            %% 第二代：李世和支系
+            %% 第二代
             LSH --> LC[二世：李成 & 周秀英]
             LSH --> LM[二世：李明 & 路正琴]
             LSH --> LY[二世：李裕 & 王秀兰]
             LSH --> LR[二世：李荣 & 王淑琴]
             LSH --> LH[二世：李华 & 王萍]
             
-            %% 第二代：李世忠支系
             LSZ --> LXW[二世：李学文 & 董壁莲]
             LSZ --> LXV[二世：李效文 & 周玉梅]
             LSZ --> LXM[二世：李学民 & 姚菊香]
             
-            %% 第二代：李世安支系
             LSA --> LP[二世：李鹏 & 罗氏]
 
-            %% 第三代及以后 (示例)
+            %% 第三代及后代示例
             LC --> LJH[三世：李军红 & 庞莉果]
             LJH --> LTF[四世：李腾飞 & 王亚文]
             LTF --> LYH[五世：李钰涵]
             LTF --> LYX[五世：李钰渲]
+            
+            LXW --> LCJ[三世：李缠军 & 姚小红]
+            LCJ --> LK[四世：李凯]
+            
+            LP --> LHH[三世：李红红 & 马顺会]
+            LHH --> LN[四世：李娜]
 
-            %% --- 关键：必须为每一个 ID 绑定点击事件 ---
+            %% 绑定所有节点的点击事件
             click LSH showDetail
             click LSZ showDetail
             click LSA showDetail
@@ -61,70 +81,185 @@
             click LXV showDetail
             click LXM showDetail
             click LP showDetail
+            
             click LJH showDetail
+            click LCJ showDetail
+            click LHH showDetail
+            
             click LTF showDetail
+            click LK showDetail
+            click LN showDetail
             click LYH showDetail
             click LYX showDetail
 
-            style LSH fill:#efebe9,stroke:#5d4037
+            style LSH fill:#efebe9,stroke:#5d4037,stroke-width:2px
         </div>
     </div>
+
     <div class="info-panel">
-        <div id="hint" class="hint-text">📜 点击姓名查看详细档案</div>
+        <div id="hint" class="hint-text">📜 请点击左侧姓名查看家庭档案</div>
         <div id="content" style="display:none">
-            <h2 id="m_name" style="color:var(--accent); border-bottom: 2px solid var(--accent); padding-bottom:10px;"></h2>
-            <div class="field"><span class="label">配偶姓名：</span><span id="m_spouse" style="font-weight:bold; color:#d32f2f;"></span></div>
-            <div class="field"><span class="label">曾用名：</span><span id="m_old"></span></div>
-            <div class="field"><span class="label">属相：</span><span id="m_zod"></span></div>
-            <div class="field"><span class="label">出生日期：</span><span id="m_birth"></span></div>
-            <div class="field"><span class="label">生平备注：</span></div>
-            <div id="m_note" class="note-box"></div>
+            <h2 style="text-align:center; color:var(--accent); margin-top:0;">👨‍👩‍👧 家族成员档案</h2>
+            
+            <div class="couple-container">
+                <div class="person-card" id="card_main">
+                    <h3 id="m_name"></h3>
+                    <div class="field"><span class="label">曾用名</span><span id="m_old"></span></div>
+                    <div class="field"><span class="label">属相</span><span id="m_zod"></span></div>
+                    <div class="field"><span class="label">出生日期</span><span id="m_birth"></span></div>
+                </div>
+                
+                <div class="person-card" id="card_spouse">
+                    <h3 id="s_name"></h3>
+                    <div class="field"><span class="label">曾用名</span><span id="s_old"></span></div>
+                    <div class="field"><span class="label">属相</span><span id="s_zod"></span></div>
+                    <div class="field"><span class="label">出生日期</span><span id="s_birth"></span></div>
+                </div>
+            </div>
+            
+            <div id="common_note" class="note-box"></div>
         </div>
     </div>
 
     <script>
-        // 数据库中的 Key 必须与上面的 ID 完全一致
+        // 核心数据库：统一采用 main(本人) 和 spouse(配偶) 的双人结构
         const personData = {
-            "LSH": { name: "李世和", spouse: "张玉莲", old: "福生", zod: "牛", birth: "1926.06.22", note: "配偶张玉莲(1932-2014)。" },
-            "LSZ": { name: "李世忠", spouse: "不详", old: "土生", zod: "不详", birth: "不详", note: "一世祖。" },
-            "LSA": { name: "李世安", spouse: "不详", old: "不详", zod: "不详", birth: "不详", note: "一世祖。" },
+            "LSH": {
+                main: { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22" },
+                spouse: { name: "张玉莲", old: "无", zod: "猴", birth: "1932.09.12" },
+                note: "第一代始祖。配偶张玉莲于2014年8月22日逝世。"
+            },
+            "LSZ": {
+                main: { name: "李世忠", old: "土生", zod: "不详", birth: "不详" },
+                spouse: { name: "不详", old: "无", zod: "不详", birth: "不详" },
+                note: "第一代始祖。"
+            },
+            "LSA": {
+                main: { name: "李世安", old: "不详", zod: "不详", birth: "不详" },
+                spouse: { name: "不详", old: "无", zod: "不详", birth: "不详" },
+                note: "第一代始祖。"
+            },
             
-            // 世和支系
-            "LC": { name: "李成", spouse: "周秀英", old: "海娃", zod: "蛇", birth: "1953.10.20", note: "周秀英属鼠(1959.10.28生)。" },
-            "LM": { name: "李明", spouse: "路正琴", old: "法海", zod: "羊", birth: "1955.07.25", note: "路正琴属虎(1962.12.27生)。" },
-            "LY": { name: "李裕", spouse: "王秀兰", old: "鲁海", zod: "鸡", birth: "1957.06.19", note: "王秀兰属龙(1964.12.15生)。" },
-            "LR": { name: "李荣", spouse: "王淑琴", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
-            "LH": { name: "李华", spouse: "王萍", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
-            
-            // 世忠支系
-            "LXW": { name: "李学文", spouse: "董壁莲", old: "写写", zod: "牛", birth: "1949.04.05", note: "董壁莲属羊。" },
-            "LXV": { name: "李效文", spouse: "周玉梅", old: "自娃", zod: "蛇", birth: "1953.08.16", note: "二世成员。" },
-            "LXM": { name: "李学民", spouse: "姚菊香", old: "鲁娃", zod: "羊", birth: "1955.08.05", note: "二世成员。" },
-            
-            // 世安支系
-            "LP": { name: "李鹏", spouse: "罗氏", old: "不详", zod: "不详", birth: "不详", note: "二世成员。" },
-
-            // 后代示例
-            "LJH": { name: "李军红", spouse: "庞莉果", old: "不详", zod: "不详", birth: "不详", note: "三世成员。" },
-            "LTF": { name: "李腾飞", spouse: "王亚文", old: "无", zod: "兔", birth: "1999.10.10", note: "四世成员。" },
-            "LYH": { name: "李钰涵", spouse: "无", old: "无", zod: "不详", birth: "不详", note: "五世成员。" },
-            "LYX": { name: "李钰渲", spouse: "无", old: "无", zod: "不详", birth: "不详", note: "五世成员。" }
+            "LC": {
+                main: { name: "李成", old: "海娃", zod: "蛇", birth: "1953.10.20" },
+                spouse: { name: "周秀英", old: "无", zod: "鼠", birth: "1959.10.28" },
+                note: "世和支系长子。"
+            },
+            "LM": {
+                main: { name: "李明", old: "法海", zod: "羊", birth: "1955.07.25" },
+                spouse: { name: "路正琴", old: "无", zod: "虎", birth: "1962.12.27" },
+                note: "世和支系。"
+            },
+            "LY": {
+                main: { name: "李裕", old: "鲁海", zod: "鸡", birth: "1957.06.19" },
+                spouse: { name: "王秀兰", old: "无", zod: "龙", birth: "1964.12.15" },
+                note: "世和支系。李裕于2018.10.29逝世。"
+            },
+            "LR": {
+                main: { name: "李荣", old: "顺鲁", zod: "虎", birth: "1962.02.30" },
+                spouse: { name: "王淑琴", old: "无", zod: "马", birth: "1966.09.08" },
+                note: "世和支系。"
+            },
+            "LH": {
+                main: { name: "李华", old: "矫娃", zod: "龙", birth: "1964.08.19" },
+                spouse: { name: "王萍", old: "无", zod: "狗", birth: "1969.12.05" },
+                note: "世和支系。王萍于2015.6.26逝世。"
+            },
+            "LXW": {
+                main: { name: "李学文", old: "写写", zod: "牛", birth: "1949.04.05" },
+                spouse: { name: "董壁莲", old: "无", zod: "羊", birth: "1955.04.30" },
+                note: "世忠支系。"
+            },
+            "LXV": {
+                main: { name: "李效文", old: "自娃", zod: "蛇", birth: "1953.08.16" },
+                spouse: { name: "周玉梅", old: "无", zod: "不详", birth: "不详" },
+                note: "世忠支系。"
+            },
+            "LXM": {
+                main: { name: "李学民", old: "鲁娃", zod: "羊", birth: "1955.08.05" },
+                spouse: { name: "姚菊香", old: "无", zod: "牛", birth: "1961.11.11" },
+                note: "世忠支系。"
+            },
+            "LP": {
+                main: { name: "李鹏", old: "尚写", zod: "龙", birth: "1952.01.29" },
+                spouse: { name: "罗氏", old: "无", zod: "不详", birth: "1952.04.28" },
+                note: "世安支系。李鹏于2017.12.30逝世。"
+            },
+            "LJH": {
+                main: { name: "李军红", old: "军红", zod: "羊", birth: "1979.06.17" },
+                spouse: { name: "庞莉果", old: "无", zod: "羊", birth: "1979.09.18" },
+                note: "第三代成员。"
+            },
+            "LCJ": {
+                main: { name: "李缠军", old: "缠军", zod: "鼠", birth: "1984.05.02" },
+                spouse: { name: "姚小红", old: "无", zod: "猪", birth: "1983.06.11" },
+                note: "第三代成员。"
+            },
+            "LHH": {
+                main: { name: "李红红", old: "红红", zod: "牛", birth: "1973.12.14" },
+                spouse: { name: "马顺会", old: "无", zod: "龙", birth: "1976.08.22" },
+                note: "第三代成员。"
+            },
+            "LTF": {
+                main: { name: "李腾飞", old: "腾飞", zod: "兔", birth: "1999.10.10" },
+                spouse: { name: "王亚文", old: "无", zod: "不详", birth: "不详" },
+                note: "第四代成员。育有第五代：李钰涵、李钰渲。"
+            },
+            "LK": {
+                main: { name: "李凯", old: "凯凯", zod: "鸡", birth: "2006.06.03" },
+                spouse: null,
+                note: "第四代成员。"
+            },
+            "LN": {
+                main: { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29" },
+                spouse: null,
+                note: "第四代成员。"
+            },
+            "LYH": {
+                main: { name: "李钰涵", old: "无", zod: "不详", birth: "不详" },
+                spouse: null,
+                note: "第五代成员（玄孙辈）。"
+            },
+            "LYX": {
+                main: { name: "李钰渲", old: "无", zod: "不详", birth: "不详" },
+                spouse: null,
+                note: "第五代成员（玄孙辈）。"
+            }
         };
 
-        mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
 
         window.showDetail = function(id) {
-            const p = personData[id];
-            if(p) {
-                document.getElementById('hint').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                document.getElementById('m_name').innerText = p.name;
-                document.getElementById('m_spouse').innerText = p.spouse || "无";
-                document.getElementById('m_old').innerText = p.old || "无";
-                document.getElementById('m_zod').innerText = p.zod || "不详";
-                document.getElementById('m_birth').innerText = p.birth || "不详";
-                document.getElementById('m_note').innerText = p.note || "暂无更多生平描述。";
+            // 如果点击了没有数据的节点，给一个默认的容错显示，防止点击没反应
+            const data = personData[id] || { 
+                main: { name: "数据待补全", old: "无", zod: "无", birth: "无" }, 
+                spouse: null, 
+                note: "该成员的详细数据尚未录入。" 
+            };
+
+            document.getElementById('hint').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            // 填充主要成员信息
+            document.getElementById('m_name').innerText = "📍 " + data.main.name;
+            document.getElementById('m_old').innerText = data.main.old || "无";
+            document.getElementById('m_zod').innerText = data.main.zod || "不详";
+            document.getElementById('m_birth').innerText = data.main.birth || "不详";
+
+            // 填充配偶信息（如果单身/没写配偶，则隐藏配偶框）
+            const spouseCard = document.getElementById('card_spouse');
+            if(data.spouse && data.spouse.name !== "不详") {
+                spouseCard.style.display = 'block';
+                document.getElementById('s_name').innerText = "💍 " + data.spouse.name;
+                document.getElementById('s_old').innerText = data.spouse.old || "无";
+                document.getElementById('s_zod').innerText = data.spouse.zod || "不详";
+                document.getElementById('s_birth').innerText = data.spouse.birth || "不详";
+            } else {
+                spouseCard.style.display = 'none'; // 隐藏右侧卡片
             }
+
+            // 填充底部备注
+            document.getElementById('common_note').innerText = data.note || "暂无其他生平描述。";
         };
     </script>
 </body>
