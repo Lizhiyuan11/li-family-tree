@@ -1,245 +1,793 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>李氏家族电子家谱</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
-        :root { --paper-bg: #fdfaf2; --accent: #8b4513; --text: #3e2723; }
-        body { font-family: "Microsoft YaHei", serif; margin: 0; display: flex; background: var(--paper-bg); height: 100vh; overflow: hidden; }
-        
-        /* 核心修复：开启双向滚动，绝不裁切 */
-        .tree-area { flex: 2; padding: 20px; overflow: auto; background: white; border-right: 3px double #d4c4a8; }
-        /* 强制 Mermaid 容器延展 */
-        .mermaid { width: max-content; min-width: 100%; padding: 40px; }
-        .mermaid svg { max-width: none !important; height: auto !important; }
-        
-        /* 右侧档案面板 */
-        .info-panel { flex: 1.2; padding: 25px; background: #fff; overflow-y: auto; box-shadow: -5px 0 15px rgba(0,0,0,0.05); min-width: 420px; }
-        h1 { text-align: center; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .couple-container { display: flex; gap: 15px; margin-top: 20px; }
-        .person-card { flex: 1; background: #fdfaf2; border: 1px solid #e0d5c1; padding: 15px; border-radius: 6px; }
-        .person-card h3 { margin-top: 0; color: #d32f2f; border-bottom: 2px solid #e0d5c1; padding-bottom: 8px; font-size: 17px; }
-        .field { margin-bottom: 10px; font-size: 14px; display: flex; border-bottom: 1px dotted #eee; padding-bottom: 5px; }
-        .label { font-weight: bold; width: 75px; color: var(--accent); flex-shrink: 0; }
-        .note-box { background: #f1ede4; padding: 15px; margin-top: 20px; font-size: 14px; border-left: 4px solid var(--accent); line-height: 1.6; }
-        .hint-text { color: #999; text-align: center; margin-top: 40%; font-size: 18px; }
-        .node rect { cursor: pointer !important; transition: 0.2s; }
-        .node:hover rect { fill: #fdf5e6 !important; stroke: #d32f2f !important; stroke-width: 2px !important; }
+        :root{
+            --paper-bg:#f7f1e5;
+            --panel-bg:#fffdf8;
+            --accent:#8b4513;
+            --accent-2:#b66a2c;
+            --text:#3e2723;
+            --border:#dcc8a7;
+            --soft:#f4ebdb;
+            --alive:#2e7d32;
+            --passed:#6d4c41;
+            --shadow:0 10px 30px rgba(62,39,35,.08);
+        }
+        *{box-sizing:border-box}
+        html,body{margin:0;padding:0;height:100%}
+        body{
+            font-family:"Microsoft YaHei","PingFang SC","Noto Serif SC",serif;
+            color:var(--text);
+            background:linear-gradient(180deg,#fbf7ef 0%, #f6efe2 100%);
+        }
+        .app{
+            display:flex;
+            flex-direction:column;
+            min-height:100vh;
+        }
+        .topbar{
+            padding:18px 24px;
+            border-bottom:1px solid var(--border);
+            background:rgba(255,252,246,.95);
+            backdrop-filter: blur(6px);
+            position:sticky;
+            top:0;
+            z-index:10;
+        }
+        .topbar-inner{
+            max-width:1600px;
+            margin:0 auto;
+            display:flex;
+            gap:16px;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+        }
+        .title-wrap h1{
+            margin:0;
+            color:var(--accent);
+            font-size:28px;
+            letter-spacing:1px;
+        }
+        .title-wrap p{
+            margin:6px 0 0;
+            color:#7b6458;
+            font-size:14px;
+        }
+        .toolbar{
+            display:flex;
+            gap:10px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
+        .toolbar input{
+            width:260px;
+            max-width:75vw;
+            padding:10px 12px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            background:#fff;
+            font-size:14px;
+            outline:none;
+        }
+        .toolbar input:focus{
+            border-color:var(--accent-2);
+            box-shadow:0 0 0 3px rgba(182,106,44,.12);
+        }
+        .btn{
+            border:none;
+            border-radius:10px;
+            padding:10px 14px;
+            background:var(--accent);
+            color:#fff;
+            cursor:pointer;
+            font-size:14px;
+            transition:.2s ease;
+        }
+        .btn:hover{background:#71360f}
+        .btn.secondary{
+            background:#ead8bd;
+            color:var(--text);
+        }
+        .main{
+            flex:1;
+            display:flex;
+            gap:0;
+            min-height:0;
+        }
+        .tree-area{
+            flex:1.85;
+            min-width:0;
+            padding:18px;
+            overflow:auto;
+            background:#fff;
+            border-right:3px double var(--border);
+        }
+        .tree-shell{
+            min-width:max-content;
+            width:max-content;
+            padding:20px;
+            border-radius:18px;
+            background:linear-gradient(180deg,#fff 0%, #fffaf4 100%);
+            box-shadow:var(--shadow);
+            border:1px solid #f0e2c8;
+        }
+        .tree-tip{
+            margin:0 0 12px;
+            font-size:13px;
+            color:#8a7365;
+        }
+        .mermaid{
+            width:max-content;
+            min-width:100%;
+            padding:20px;
+        }
+        .mermaid svg{
+            max-width:none !important;
+            height:auto !important;
+        }
+
+        .info-panel{
+            flex:1;
+            min-width:380px;
+            max-width:520px;
+            background:var(--panel-bg);
+            overflow-y:auto;
+            padding:22px;
+            box-shadow:-8px 0 24px rgba(0,0,0,.03);
+        }
+        .panel-card{
+            background:#fff;
+            border:1px solid #efe1c7;
+            border-radius:18px;
+            padding:18px;
+            box-shadow:var(--shadow);
+        }
+        .panel-title{
+            margin:0 0 8px;
+            color:var(--accent);
+            font-size:24px;
+            text-align:center;
+        }
+        .panel-subtitle{
+            margin:0 0 18px;
+            text-align:center;
+            color:#8b7666;
+            font-size:14px;
+        }
+        .hint{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:320px;
+            text-align:center;
+            color:#9b8a7e;
+            line-height:1.9;
+            font-size:18px;
+            padding:20px;
+            border:2px dashed #eadcc4;
+            border-radius:18px;
+            background:#fffcf6;
+        }
+        .couple-container{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:14px;
+        }
+        .person-card{
+            background:#fcf8f0;
+            border:1px solid #eadcc4;
+            padding:16px;
+            border-radius:16px;
+        }
+        .person-card h3{
+            margin:0 0 12px;
+            color:#9b3025;
+            font-size:18px;
+            padding-bottom:10px;
+            border-bottom:2px solid #eadcc4;
+            word-break:break-all;
+        }
+        .field{
+            display:flex;
+            gap:8px;
+            margin-bottom:10px;
+            padding-bottom:8px;
+            border-bottom:1px dotted #e8ddcb;
+            font-size:14px;
+            line-height:1.6;
+        }
+        .label{
+            width:78px;
+            flex-shrink:0;
+            color:var(--accent);
+            font-weight:700;
+        }
+        .status{
+            display:inline-flex;
+            align-items:center;
+            border-radius:999px;
+            padding:4px 10px;
+            font-size:12px;
+            font-weight:700;
+            letter-spacing:.3px;
+        }
+        .status-alive{
+            background:rgba(46,125,50,.12);
+            color:var(--alive);
+        }
+        .status-passed{
+            background:rgba(109,76,65,.12);
+            color:var(--passed);
+        }
+        .note-box{
+            margin-top:16px;
+            padding:14px 16px;
+            background:var(--soft);
+            border-left:4px solid var(--accent);
+            border-radius:10px;
+            font-size:14px;
+            line-height:1.8;
+            color:#5d4b42;
+        }
+        .note-title{
+            font-weight:700;
+            margin-bottom:6px;
+            color:var(--accent);
+        }
+        .footer-note{
+            margin-top:14px;
+            font-size:12px;
+            color:#9b8a7e;
+            line-height:1.7;
+        }
+
+        .node rect, .node polygon, .node circle, .node path{
+            cursor:pointer !important;
+            transition:.2s ease;
+        }
+        .node:hover rect,
+        .node:hover polygon,
+        .node:hover circle,
+        .node:hover path{
+            stroke:#c43c2c !important;
+            stroke-width:2.2px !important;
+            filter:drop-shadow(0 3px 5px rgba(196,60,44,.18));
+        }
+
+        @media (max-width: 1080px){
+            .main{
+                flex-direction:column;
+            }
+            .tree-area{
+                border-right:none;
+                border-bottom:3px double var(--border);
+                min-height:52vh;
+            }
+            .info-panel{
+                min-width:0;
+                max-width:none;
+            }
+        }
+        @media (max-width: 680px){
+            .topbar{
+                padding:14px 14px;
+            }
+            .title-wrap h1{
+                font-size:22px;
+            }
+            .couple-container{
+                grid-template-columns:1fr;
+            }
+            .toolbar input{
+                width:100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="tree-area">
-        <h1>李氏家族联谱</h1>
-        <div class="mermaid">
-            graph TD
-            %% --- 第一代 ---
-            S1[一世：李世和 & 张玉莲]
-            S2[一世：李世忠]
-            S3[一世：李世海]
-
-            %% --- 第二代 ---
-            S1 --> SH1[二世：李成 & 周秀英]
-            S1 --> SH2[二世：李明 & 路正琴]
-            S1 --> SH3[二世：李裕 & 王秀兰]
-            S1 --> SH4[二世：李荣 & 王淑琴]
-            S1 --> SH5[二世：李华 & 王萍]
-            
-            S2 --> SZ1[二世：李学文 & 董壁莲]
-            S2 --> SZ2[二世：李效文 & 周玉梅]
-            S2 --> SZ3[二世：李学民 & 姚菊香]
-            
-            S3 --> SA1[二世：李鹏 & 罗桂英]
-
-            %% --- 第三代 ---
-            SH1 --> G3_C1[三世：李继军 & 庞莉果]
-            SH1 --> G3_C2[三世：李继强]
-            SH2 --> G3_M1[三世：李志龙 & 雒连霞]
-            SH2 --> G3_M2[三世：李志岩 & 王晓蕾]
-            SH3 --> G3_Y1[三世：李小红 & 王遇霞]
-            SH3 --> G3_Y2[三世：李继萍]
-            SH3 --> G3_Y3[三世：李瑞萍]
-            SH4 --> G3_R1[三世：李志辉 & 何小利]
-            SH4 --> G3_R2[三世：李志胜 & 王娇]
-            SH4 --> G3_R3[三世：李艳艳]
-            SH5 --> G3_H1[三世：李志博 & 杨韦唯]
-            SH5 --> G3_H2[三世：李志渊 & 待定]
-            SH5 --> G3_H3[三世：李继芳]
-
-            SZ1 --> G3_ZW1[三世：李缠军 & 姚小红]
-            SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
-            SZ3 --> G3_XM1[三世：李渊博 & 待定]
-            SZ3 --> G3_XM2[三世：李宏博]
-
-            SA1 --> G3_P1[三世：李红红 & 马顺会]
-            SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
-
-            %% --- 第四代 ---
-            G3_P1 --> G4_P1[四世：李祥兵 & 待定]
-            G3_P1 --> G4_P2[四世：李敏]
-            G3_P1 --> G4_P3[四世：李娜]
-            G3_P2 --> G4_P4[四世：李翔 & 待定]
-            
-            G3_C1 --> G4_C1[四世：李腾飞 & 王亚文]
-            G3_Y1 --> G4_Y1[四世：李欣 & 待定]
-            
-            G3_XW1 --> G4_XW1[四世：李蕾]
-            G3_XW1 --> G4_XW2[四世：李璐]
-            
-            G3_R1 --> G4_R1[四世：李泽煦]
-            G3_R1 --> G4_R2[四世：李泽琪]
-            
-            G3_M1 --> G4_M1[四世：李彦辰]
-            G3_M1 --> G4_M2[四世：李彦达]
-            G3_M2 --> G4_M3[四世：李彦纬]
-            G3_M2 --> G4_M4[四世：李彦哲]
-            
-            G3_ZW1 --> G4_Z1[四世：李凯]
-            G3_ZW1 --> G4_Z2[四世：李洁]
-
-            %% --- 第五代 ---
-            G4_C1 --> G5_1[五世：李钰涵]
-            G4_C1 --> G5_2[五世：李钰渲]
-
-            %% --- 绑定所有节点的点击事件 ---
-            click S1 showDetail; click S2 showDetail; click S3 showDetail;
-            click SH1 showDetail; click SH2 showDetail; click SH3 showDetail; click SH4 showDetail; click SH5 showDetail;
-            click SZ1 showDetail; click SZ2 showDetail; click SZ3 showDetail; click SA1 showDetail;
-            click G3_P1 showDetail; click G3_P2 showDetail; click G3_C1 showDetail; click G3_C2 showDetail;
-            click G3_M1 showDetail; click G3_M2 showDetail; click G3_Y1 showDetail; click G3_Y2 showDetail; click G3_Y3 showDetail;
-            click G3_R1 showDetail; click G3_R2 showDetail; click G3_R3 showDetail;
-            click G3_H1 showDetail; click G3_H2 showDetail; click G3_H3 showDetail;
-            click G3_ZW1 showDetail; click G3_XW1 showDetail; click G3_XM1 showDetail; click G3_XM2 showDetail;
-            click G4_P1 showDetail; click G4_P2 showDetail; click G4_P3 showDetail; click G4_P4 showDetail;
-            click G4_C1 showDetail; click G4_Y1 showDetail; click G4_XW1 showDetail; click G4_XW2 showDetail;
-            click G4_R1 showDetail; click G4_R2 showDetail; click G4_M1 showDetail; click G4_M2 showDetail;
-            click G4_M3 showDetail; click G4_M4 showDetail; click G4_Z1 showDetail; click G4_Z2 showDetail;
-            click G5_1 showDetail; click G5_2 showDetail;
-            
-            style S1 fill:#efebe9,stroke:#5d4037,stroke-width:2px
+<div class="app">
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="title-wrap">
+                <h1>李氏家族电子家谱</h1>
+                <p>点击左侧家谱中的姓名，即可在右侧查看详细档案。支持姓名搜索。</p>
+            </div>
+            <div class="toolbar">
+                <input id="searchInput" type="text" placeholder="输入姓名，例如：李继军 / 王萍" />
+                <button class="btn" onclick="searchPerson()">搜索</button>
+                <button class="btn secondary" onclick="resetPanel()">清空右侧</button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <div class="info-panel">
-        <div id="hint" class="hint-text">📜 请点击左侧树状图中的姓名<br>查看详细档案</div>
-        <div id="content" style="display:none">
-            <h2 style="text-align:center; color:var(--accent); margin-top:0;">👨‍👩‍👧 家族成员档案</h2>
-            <div class="couple-container">
-                <div class="person-card" id="card_main">
-                    <h3 id="m_name"></h3>
-                    <div class="field"><span class="label">曾用名</span><span id="m_old"></span></div>
-                    <div class="field"><span class="label">属相</span><span id="m_zod"></span></div>
-                    <div class="field"><span class="label">出生日期</span><span id="m_birth"></span></div>
-                </div>
-                <div class="person-card" id="card_spouse">
-                    <h3 id="s_name"></h3>
-                    <div class="field"><span class="label">曾用名</span><span id="s_old"></span></div>
-                    <div class="field"><span class="label">属相</span><span id="s_zod"></span></div>
-                    <div class="field"><span class="label">出生日期</span><span id="s_birth"></span></div>
+    <main class="main">
+        <section class="tree-area">
+            <div class="tree-shell">
+                <p class="tree-tip">提示：家谱较宽，可左右滚动；点击任一节点即可查看对应成员信息。</p>
+                <div class="mermaid">
+flowchart TD
+    %% --- 第一代 ---
+    S1[一世：李世和 & 张玉莲]
+    S2[一世：李世忠]
+    S3[一世：李世海]
+
+    %% --- 第二代 ---
+    S1 --> SH1[二世：李成 & 周秀英]
+    S1 --> SH2[二世：李明 & 路正琴]
+    S1 --> SH3[二世：李裕 & 王秀兰]
+    S1 --> SH4[二世：李荣 & 王淑琴]
+    S1 --> SH5[二世：李华 & 王萍]
+
+    S2 --> SZ1[二世：李学文 & 董壁莲]
+    S2 --> SZ2[二世：李孝文 & 周玉梅]
+    S2 --> SZ3[二世：李学民 & 姚菊香]
+
+    S3 --> SA1[二世：李鹏 & 罗桂英]
+
+    %% --- 第三代 ---
+    SH1 --> G3_C1[三世：李继军 & 庞莉果]
+    SH1 --> G3_C2[三世：李继强]
+    SH2 --> G3_M1[三世：李志龙 & 雒连霞]
+    SH2 --> G3_M2[三世：李志岩 & 王晓蕾]
+    SH3 --> G3_Y1[三世：李小红 & 王遇霞]
+    SH3 --> G3_Y2[三世：李继萍]
+    SH3 --> G3_Y3[三世：李瑞萍]
+    SH4 --> G3_R1[三世：李志辉 & 何小利]
+    SH4 --> G3_R2[三世：李志胜 & 王娇]
+    SH4 --> G3_R3[三世：李艳艳]
+    SH5 --> G3_H1[三世：李志博 & 杨韦唯]
+    SH5 --> G3_H2[三世：李志渊]
+    SH5 --> G3_H3[三世：李继芳]
+
+    SZ1 --> G3_ZW1[三世：李缠军 & 姚小红]
+    SZ2 --> G3_XW1[三世：李军强 & 王兵梅]
+    SZ3 --> G3_XM1[三世：李渊博]
+    SZ3 --> G3_XM2[三世：李宏博]
+
+    SA1 --> G3_P1[三世：李红红 & 马顺会]
+    SA1 --> G3_P2[三世：李继仁 & 王瑞霞]
+
+    %% --- 第四代 ---
+    G3_P1 --> G4_P1[四世：李祥兵]
+    G3_P1 --> G4_P2[四世：李敏]
+    G3_P1 --> G4_P3[四世：李娜]
+    G3_P2 --> G4_P4[四世：李翔 & 李巧转]
+
+    G3_C1 --> G4_C1[四世：李腾飞 & 王亚文]
+    G3_Y1 --> G4_Y1[四世：李昕]
+
+    G3_XW1 --> G4_XW1[四世：李蕾]
+    G3_XW1 --> G4_XW2[四世：李璐]
+
+    G3_R1 --> G4_R1[四世：李泽煦]
+    G3_R1 --> G4_R2[四世：李泽琪]
+
+    G3_M1 --> G4_M1[四世：李彦辰]
+    G3_M1 --> G4_M2[四世：李彦达]
+    G3_M2 --> G4_M3[四世：李彦纬]
+    G3_M2 --> G4_M4[四世：李彦哲]
+
+    G3_ZW1 --> G4_Z1[四世：李凯]
+    G3_ZW1 --> G4_Z2[四世：李洁]
+
+    %% --- 第五代 ---
+    G4_C1 --> G5_1[五世：李钰涵]
+    G4_C1 --> G5_2[五世：李钰渲]
+
+    %% --- 点击事件 ---
+    click S1 showDetail
+    click S2 showDetail
+    click S3 showDetail
+    click SH1 showDetail
+    click SH2 showDetail
+    click SH3 showDetail
+    click SH4 showDetail
+    click SH5 showDetail
+    click SZ1 showDetail
+    click SZ2 showDetail
+    click SZ3 showDetail
+    click SA1 showDetail
+    click G3_P1 showDetail
+    click G3_P2 showDetail
+    click G3_C1 showDetail
+    click G3_C2 showDetail
+    click G3_M1 showDetail
+    click G3_M2 showDetail
+    click G3_Y1 showDetail
+    click G3_Y2 showDetail
+    click G3_Y3 showDetail
+    click G3_R1 showDetail
+    click G3_R2 showDetail
+    click G3_R3 showDetail
+    click G3_H1 showDetail
+    click G3_H2 showDetail
+    click G3_H3 showDetail
+    click G3_ZW1 showDetail
+    click G3_XW1 showDetail
+    click G3_XM1 showDetail
+    click G3_XM2 showDetail
+    click G4_P1 showDetail
+    click G4_P2 showDetail
+    click G4_P3 showDetail
+    click G4_P4 showDetail
+    click G4_C1 showDetail
+    click G4_Y1 showDetail
+    click G4_XW1 showDetail
+    click G4_XW2 showDetail
+    click G4_R1 showDetail
+    click G4_R2 showDetail
+    click G4_M1 showDetail
+    click G4_M2 showDetail
+    click G4_M3 showDetail
+    click G4_M4 showDetail
+    click G4_Z1 showDetail
+    click G4_Z2 showDetail
+    click G5_1 showDetail
+    click G5_2 showDetail
+
+    style S1 fill:#efebe9,stroke:#5d4037,stroke-width:2px
                 </div>
             </div>
-            <div id="common_note" class="note-box"></div>
-        </div>
-    </div>
+        </section>
 
-    <script>
-        // --- 完整人员数据库 ---
-        const personData = {
-            "S1": { main: { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22",death: "不详"}, spouse: { name: "张玉莲", old: "无", zod: "猴", birth: "1932.09.12" } },
-            "SH1": { main: { name: "李成", old: "海娃", zod: "蛇", birth: "1953.10.20" }, spouse: { name: "周秀英", old: "无", zod: "鼠", birth: "1959.10.28" } },
-            "SH2": { main: { name: "李明", old: "法海", zod: "羊", birth: "1955.07.25" }, spouse: { name: "路正琴", old: "无", zod: "虎", birth: "1962.12.27" } },
-            "SH3": { main: { name: "李裕", old: "禄海", zod: "鸡", birth: "1957.06.19",death: "2018.10.29" }, spouse: { name: "王秀兰", old: "无", zod: "龙", birth: "1964.12.15" } },
-            "SH4": { main: { name: "李荣", old: "顺禄", zod: "虎", birth: "1962.02.30" }, spouse: { name: "王淑琴", old: "无", zod: "马", birth: "1966.09.08" } },
-            "SH5": { main: { name: "李华", old: "蛟娃", zod: "龙", birth: "1964.08.19" }, spouse: { name: "王萍", old: "无", zod: "狗", birth: "1969.12.05" ,death: "2015.06.26"} },
-            "S2": { main: { name: "李世海", old: "土生", zod: "不详", birth: "不详" ,death: "不详"}, spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" } },
-            "SA1": { main: { name: "李鹏", old: "尚写", zod: "龙", birth: "1952.01.29",death: "2017.12.30" }, spouse: { name: "罗桂英", old: "无", zod: "马", birth: "1952.04.28" ,death: "不详"} },
-            "S3": { main: { name: "李世忠", old: "将生", zod: "不详", birth: "不详" ,death: "不详"}, spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" } },
-            "SZ1": { main: { name: "李学文", old: "写写", zod: "牛", birth: "1949.04.05" }, spouse: { name: "董壁莲", old: "无", zod: "羊", birth: "1955.04.30" } },
-            "SZ1": { main: { name: "李孝文", old: "自娃", zod: "蛇", birth: "1953.08.16" }, spouse: { name: "周玉梅", old: "无", zod: "羊", birth: "1953.07.20" } },
-            "SZ3": { main: { name: "李学民", old: "禄娃", zod: "羊", birth: "1955.08.05" }, spouse: { name: "姚菊香", old: "无", zod: "牛", birth: "1961.11.11" } },
-            
-            // 第三代
-            "G3_P1": { main: { name: "李红红", old: "红红", zod: "牛", birth: "1973.12.14" }, spouse: { name: "马顺会", old: "无", zod: "龙", birth: "1976.08.22" } },
-            "G3_P2": { main: { name: "李继仁", old: "根红", zod: "龙", birth: "1976.10.21" }, spouse: { name: "王瑞霞", old: "无", zod: "龙", birth: "1976.10.20" } },
-            "G3_C1": { main: { name: "李继军", old: "军红", zod: "羊", birth: "1979.06.17" }, spouse: { name: "庞莉果", old: "无", zod: "羊", birth: "1979.09.18" } },
-            "G3_C1": { main: { name: "李继强", old: "小军", zod: "牛", birth: "1973.12.14",death: "2019.02.18" ,three events："丁三鬼"}, spouse: null },
-            "G3_M1": { main: { name: "李志龙", old: "六一", zod: "牛", birth: "1985.03.23" }, spouse: { name: "雒连霞", old: "无", zod: "兔", birth: "1987.06.18" } },
-            "G3_M2": { main: { name: "李志岩", old: "双六", zod: "兔", birth: "1987.08.17" }, spouse: { name: "王晓蕾", old: "无", zod: "虎", birth: "1986.02.23" } },
-            "G3_Y1": { main: { name: "李小红", old: "小红", zod: "兔", birth: "1987.04.16" }, spouse: { name: "王遇霞", old: "无", zod: "羊", birth: "1991.03.13" } },
-            "G3_Y2": { main: { name: "李继萍", old: "丽丽", zod: "蛇", birth: "1989.09.04" }, spouse: null },
-            "G3_Y3": { main: { name: "李瑞萍", old: "伟丽", zod: "羊", birth: "1991.10.05" }, spouse: null },
-            "G3_R1": { main: { name: "李志辉", old: "亚亭", zod: "羊", birth: "1991.04.16" }, spouse: { name: "何小利", old: "无", zod: "鸡", birth: "1993.08.13" } },
-            "G3_R2": { main: { name: "李志胜", old: "刚刚", zod: "猴", birth: "1992.10.23" }, spouse: { name: "王娇", old: "无", zod: "不详", birth: "不详" } },
-            "G3_R3": { main: { name: "李艳艳", old: "艳艳", zod: "不详", birth: "不详" }, spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" } },
-            "G3_H1": { main: { name: "李志博", old: "强娃", zod: "猪", birth: "1995.03.17" }, spouse: { name: "杨韦唯", old: "无", zod: "不详", birth: "不详" } },
-            "G3_H2": { main: { name: "李志渊", old: "对对", zod: "虎", birth: "1998.02.04" }, spouse: null },
-            "G3_H3": { main: { name: "李继芳", old: "伟艳", zod: "猴", birth: "1992.03.11" }, spouse: null },
-            "G3_ZW1": { main: { name: "李缠军", old: "缠军", zod: "鼠", birth: "1984.05.02" }, spouse: { name: "姚小红", old: "无", zod: "猪", birth: "1983.06.11" } },
-            "G3_XW1": { main: { name: "李军强", old: "军强", zod: "狗", birth: "1982.05.25" }, spouse: { name: "王兵梅", old: "无", zod: "兔", birth: "1987.09.15" } },
-            "G3_XM1": { main: { name: "李渊博", old: "渊博", zod: "鸡", birth: "2005.07.15" }, spouse: null },
-            "G3_XM2": { main: { name: "李宏博", old: "无", zod: "狗", birth: "1994.10.02" }, spouse: null },
-            
-            // 第四代
-            "G4_P1": { main: { name: "李祥兵", old: "广兵", zod: "猪", birth: "1995.08.13" }, spouse: null },
-            "G4_P2": { main: { name: "李敏", old: "彤彤", zod: "兔", birth: "1999.10.07" }, spouse: null },
-            "G4_P3": { main: { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29" }, spouse: null },
-            "G4_P4": { main: { name: "李翔", old: "飞飞", zod: "蛇", birth: "2001.07.21" }, spouse: { name: "李巧转", old: "巧转", zod: "不详", birth: "不详" } },
-            "G4_C1": { main: { name: "李腾飞", old: "腾飞", zod: "兔", birth: "1999.10.10" }, spouse: { name: "王亚文", old: "亚文", zod: "蛇", birth: "2001.10.28" } },
-            "G4_Y1": { main: { name: "李昕", old: "无", zod: "鼠", birth: "2020.01.23" }, spouse: null },
-            "G4_XW1": { main: { name: "李蕾", old: "无", zod: "狗", birth: "2006.10.19" }, spouse: null },
-            "G4_XW2": { main: { name: "李璐", old: "无", zod: "马", birth: "2014.09.13" }, spouse: null },
-            "G4_R1": { main: { name: "李泽煦", old: "无", zod: "鼠", birth: "2020.07.22" }, spouse: null },
-            "G4_R2": { main: { name: "李泽琪", old: "无", zod: "不详", birth: "不详" }, spouse: null },
-            "G4_M1": { main: { name: "李彦辰", old: "无", zod: "羊", birth: "2015.01.27" }, spouse: null },
-            "G4_M2": { main: { name: "李彦达", old: "无", zod: "猪", birth: "2019.01.04" }, spouse: null },
-            "G4_M3": { main: { name: "李彦纬", old: "无", zod: "马", birth: "2014.10.29" }, spouse: null },
-            "G4_M4": { main: { name: "李彦哲", old: "无", zod: "狗", birth: "2018.11.30" }, spouse: null },
-            "G4_Z1": { main: { name: "李凯", old: "凯凯", zod: "鸡", birth: "2006.06.02" }, spouse: null },
-            "G4_Z2": { main: { name: "李洁", old: "无", zod: "不详", birth: "不详" }, spouse: null },
+        <aside class="info-panel">
+            <div class="panel-card">
+                <h2 class="panel-title">家族成员档案</h2>
+                <p class="panel-subtitle">当前为电子谱示意版，可继续补充生平、排行、迁徙、职业等信息。</p>
 
-            // 第五代
-            "G5_1": { main: { name: "李钰涵", old: "无", zod: "不详", birth: "不详" }, spouse: null },
-            "G5_2": { main: { name: "李钰渲", old: "无", zod: "不详", birth: "不详" }, spouse: null }
-        };
+                <div id="hint" class="hint">
+                    📜 请点击左侧树状图中的姓名<br />
+                    查看详细档案
+                </div>
 
-        mermaid.initialize({ startOnLoad: true, theme: 'forest', securityLevel: 'loose' });
-        // 渲染状态（健在 or 逝世）的辅助函数
-        function renderStatus(deathDate, elementId) {
-            const el = document.getElementById(elementId);
-            if (deathDate) {
-                el.innerText = "故于 " + deathDate;
-                el.className = "status-passed"; // 灰色
-            } else {
-                el.innerText = "健在";
-                el.className = "status-alive"; // 绿色加粗
-            }
+                <div id="content" style="display:none;">
+                    <div class="couple-container">
+                        <div class="person-card" id="card_main">
+                            <h3 id="m_name">📍 主成员</h3>
+                            <div class="field"><span class="label">曾用名</span><span id="m_old">-</span></div>
+                            <div class="field"><span class="label">属相</span><span id="m_zod">-</span></div>
+                            <div class="field"><span class="label">出生日期</span><span id="m_birth">-</span></div>
+                            <div class="field"><span class="label">状态</span><span id="m_status">-</span></div>
+                        </div>
+
+                        <div class="person-card" id="card_spouse">
+                            <h3 id="s_name">💍 配偶</h3>
+                            <div class="field"><span class="label">曾用名</span><span id="s_old">-</span></div>
+                            <div class="field"><span class="label">属相</span><span id="s_zod">-</span></div>
+                            <div class="field"><span class="label">出生日期</span><span id="s_birth">-</span></div>
+                            <div class="field"><span class="label">状态</span><span id="s_status">-</span></div>
+                        </div>
+                    </div>
+
+                    <div id="common_note" class="note-box">
+                        <div class="note-title">备注</div>
+                        <div id="note_text">家族血脉，代代相传。</div>
+                    </div>
+                </div>
+
+                <div class="footer-note">
+                    说明：本页面为单文件版 HTML。若首次打开无法显示树图，请确认当前设备可联网，以便加载 Mermaid 图形库。
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<script>
+    const personData = {
+        "S1": {
+            main: { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22", death: "不详" },
+            spouse: { name: "张玉莲", old: "无", zod: "猴", birth: "1932.09.12" },
+            note: "一世祖信息已录入，可继续补充籍贯、排行、生平事迹。"
+        },
+        "S2": {
+            main: { name: "李世忠", old: "将生", zod: "不详", birth: "不详", death: "不详" },
+            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" },
+            note: "配偶信息待进一步核实。"
+        },
+        "S3": {
+            main: { name: "李世海", old: "土生", zod: "不详", birth: "不详", death: "不详" },
+            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" },
+            note: "配偶信息待进一步核实。"
+        },
+
+        "SH1": {
+            main: { name: "李成", old: "海娃", zod: "蛇", birth: "1953.10.20" },
+            spouse: { name: "周秀英", old: "无", zod: "鼠", birth: "1959.10.28" }
+        },
+        "SH2": {
+            main: { name: "李明", old: "法海", zod: "羊", birth: "1955.07.25" },
+            spouse: { name: "路正琴", old: "无", zod: "虎", birth: "1962.12.27" }
+        },
+        "SH3": {
+            main: { name: "李裕", old: "禄海", zod: "鸡", birth: "1957.06.19", death: "2018.10.29" },
+            spouse: { name: "王秀兰", old: "无", zod: "龙", birth: "1964.12.15" }
+        },
+        "SH4": {
+            main: { name: "李荣", old: "顺禄", zod: "虎", birth: "1962.02.30" },
+            spouse: { name: "王淑琴", old: "无", zod: "马", birth: "1966.09.08" }
+        },
+        "SH5": {
+            main: { name: "李华", old: "蛟娃", zod: "龙", birth: "1964.08.19" },
+            spouse: { name: "王萍", old: "无", zod: "狗", birth: "1969.12.05", death: "2015.06.26" }
+        },
+
+        "SZ1": {
+            main: { name: "李学文", old: "写写", zod: "牛", birth: "1949.04.05" },
+            spouse: { name: "董壁莲", old: "无", zod: "羊", birth: "1955.04.30" }
+        },
+        "SZ2": {
+            main: { name: "李孝文", old: "自娃", zod: "蛇", birth: "1953.08.16" },
+            spouse: { name: "周玉梅", old: "无", zod: "羊", birth: "1953.07.20" }
+        },
+        "SZ3": {
+            main: { name: "李学民", old: "禄娃", zod: "羊", birth: "1955.08.05" },
+            spouse: { name: "姚菊香", old: "无", zod: "牛", birth: "1961.11.11" }
+        },
+        "SA1": {
+            main: { name: "李鹏", old: "尚写", zod: "龙", birth: "1952.01.29", death: "2017.12.30" },
+            spouse: { name: "罗桂英", old: "无", zod: "马", birth: "1952.04.28", death: "不详" }
+        },
+
+        "G3_C1": {
+            main: { name: "李继军", old: "军红", zod: "羊", birth: "1979.06.17" },
+            spouse: { name: "庞莉果", old: "无", zod: "羊", birth: "1979.09.18" }
+        },
+        "G3_C2": {
+            main: { name: "李继强", old: "小军", zod: "牛", birth: "1973.12.14", death: "2019.02.18" },
+            spouse: null,
+            note: "别名：丁三鬼。"
+        },
+        "G3_M1": {
+            main: { name: "李志龙", old: "六一", zod: "牛", birth: "1985.03.23" },
+            spouse: { name: "雒连霞", old: "无", zod: "兔", birth: "1987.06.18" }
+        },
+        "G3_M2": {
+            main: { name: "李志岩", old: "双六", zod: "兔", birth: "1987.08.17" },
+            spouse: { name: "王晓蕾", old: "无", zod: "虎", birth: "1986.02.23" }
+        },
+        "G3_Y1": {
+            main: { name: "李小红", old: "小红", zod: "兔", birth: "1987.04.16" },
+            spouse: { name: "王遇霞", old: "无", zod: "羊", birth: "1991.03.13" }
+        },
+        "G3_Y2": {
+            main: { name: "李继萍", old: "丽丽", zod: "蛇", birth: "1989.09.04" },
+            spouse: null
+        },
+        "G3_Y3": {
+            main: { name: "李瑞萍", old: "伟丽", zod: "羊", birth: "1991.10.05" },
+            spouse: null
+        },
+        "G3_R1": {
+            main: { name: "李志辉", old: "亚亭", zod: "羊", birth: "1991.04.16" },
+            spouse: { name: "何小利", old: "无", zod: "鸡", birth: "1993.08.13" }
+        },
+        "G3_R2": {
+            main: { name: "李志胜", old: "刚刚", zod: "猴", birth: "1992.10.23" },
+            spouse: { name: "王娇", old: "无", zod: "不详", birth: "不详" }
+        },
+        "G3_R3": {
+            main: { name: "李艳艳", old: "艳艳", zod: "不详", birth: "不详" },
+            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" }
+        },
+        "G3_H1": {
+            main: { name: "李志博", old: "强娃", zod: "猪", birth: "1995.03.17" },
+            spouse: { name: "杨韦唯", old: "无", zod: "不详", birth: "不详" }
+        },
+        "G3_H2": {
+            main: { name: "李志渊", old: "对对", zod: "虎", birth: "1998.02.04" },
+            spouse: null
+        },
+        "G3_H3": {
+            main: { name: "李继芳", old: "伟艳", zod: "猴", birth: "1992.03.11" },
+            spouse: null
+        },
+        "G3_ZW1": {
+            main: { name: "李缠军", old: "缠军", zod: "鼠", birth: "1984.05.02" },
+            spouse: { name: "姚小红", old: "无", zod: "猪", birth: "1983.06.11" }
+        },
+        "G3_XW1": {
+            main: { name: "李军强", old: "军强", zod: "狗", birth: "1982.05.25" },
+            spouse: { name: "王兵梅", old: "无", zod: "兔", birth: "1987.09.15" }
+        },
+        "G3_XM1": {
+            main: { name: "李渊博", old: "渊博", zod: "鸡", birth: "2005.07.15" },
+            spouse: null
+        },
+        "G3_XM2": {
+            main: { name: "李宏博", old: "无", zod: "狗", birth: "1994.10.02" },
+            spouse: null
+        },
+        "G3_P1": {
+            main: { name: "李红红", old: "红红", zod: "牛", birth: "1973.12.14" },
+            spouse: { name: "马顺会", old: "无", zod: "龙", birth: "1976.08.22" }
+        },
+        "G3_P2": {
+            main: { name: "李继仁", old: "根红", zod: "龙", birth: "1976.10.21" },
+            spouse: { name: "王瑞霞", old: "无", zod: "龙", birth: "1976.10.20" }
+        },
+
+        "G4_P1": {
+            main: { name: "李祥兵", old: "广兵", zod: "猪", birth: "1995.08.13" },
+            spouse: null
+        },
+        "G4_P2": {
+            main: { name: "李敏", old: "彤彤", zod: "兔", birth: "1999.10.07" },
+            spouse: null
+        },
+        "G4_P3": {
+            main: { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29" },
+            spouse: null
+        },
+        "G4_P4": {
+            main: { name: "李翔", old: "飞飞", zod: "蛇", birth: "2001.07.21" },
+            spouse: { name: "李巧转", old: "巧转", zod: "不详", birth: "不详" }
+        },
+        "G4_C1": {
+            main: { name: "李腾飞", old: "腾飞", zod: "兔", birth: "1999.10.10" },
+            spouse: { name: "王亚文", old: "亚文", zod: "蛇", birth: "2001.10.28" }
+        },
+        "G4_Y1": {
+            main: { name: "李昕", old: "无", zod: "鼠", birth: "2020.01.23" },
+            spouse: null
+        },
+        "G4_XW1": {
+            main: { name: "李蕾", old: "无", zod: "狗", birth: "2006.10.19" },
+            spouse: null
+        },
+        "G4_XW2": {
+            main: { name: "李璐", old: "无", zod: "马", birth: "2014.09.13" },
+            spouse: null
+        },
+        "G4_R1": {
+            main: { name: "李泽煦", old: "无", zod: "鼠", birth: "2020.07.22" },
+            spouse: null
+        },
+        "G4_R2": {
+            main: { name: "李泽琪", old: "无", zod: "不详", birth: "不详" },
+            spouse: null
+        },
+        "G4_M1": {
+            main: { name: "李彦辰", old: "无", zod: "羊", birth: "2015.01.27" },
+            spouse: null
+        },
+        "G4_M2": {
+            main: { name: "李彦达", old: "无", zod: "猪", birth: "2019.01.04" },
+            spouse: null
+        },
+        "G4_M3": {
+            main: { name: "李彦纬", old: "无", zod: "马", birth: "2014.10.29" },
+            spouse: null
+        },
+        "G4_M4": {
+            main: { name: "李彦哲", old: "无", zod: "狗", birth: "2018.11.30" },
+            spouse: null
+        },
+        "G4_Z1": {
+            main: { name: "李凯", old: "凯凯", zod: "鸡", birth: "2006.06.02" },
+            spouse: null
+        },
+        "G4_Z2": {
+            main: { name: "李洁", old: "无", zod: "不详", birth: "不详" },
+            spouse: null
+        },
+
+        "G5_1": {
+            main: { name: "李钰涵", old: "无", zod: "不详", birth: "不详" },
+            spouse: null
+        },
+        "G5_2": {
+            main: { name: "李钰渲", old: "无", zod: "不详", birth: "不详" },
+            spouse: null
         }
-        window.showDetail = function(id) {
-            const data = personData[id] || { main: { name: "信息待核实", old: "无", zod: "不详", birth: "不详" }, spouse: null, note: "数据持续完善中。" };
+    };
 
-            document.getElementById('hint').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
+    mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: "loose",
+        theme: "base",
+        themeVariables: {
+            primaryColor: "#f5efe2",
+            primaryTextColor: "#3e2723",
+            primaryBorderColor: "#8b4513",
+            lineColor: "#8b6b56",
+            secondaryColor: "#fff7ea",
+            tertiaryColor: "#faf4ea",
+            fontFamily: "Microsoft YaHei, PingFang SC, serif"
+        },
+        flowchart: {
+            htmlLabels: true,
+            curve: "basis",
+            padding: 12,
+            nodeSpacing: 20,
+            rankSpacing: 32
+        }
+    });
 
-            // 填充主要成员
-            document.getElementById('m_name').innerText = "📍 " + data.main.name;
-            document.getElementById('m_old').innerText = data.main.old || "无";
-            document.getElementById('m_zod').innerText = data.main.zod || "不详";
-            document.getElementById('m_birth').innerText = data.main.birth || "不详";
+    function formatValue(value) {
+        return value && String(value).trim() ? value : "不详";
+    }
 
-            // 填充配偶（智能隐藏）
-            const sCard = document.getElementById('card_spouse');
-            if(data.spouse && data.spouse.name && data.spouse.name !== "待定") {
-                sCard.style.display = 'block';
-                document.getElementById('s_name').innerText = "💍 " + data.spouse.name;
-                document.getElementById('s_old').innerText = data.spouse.old || "无";
-                document.getElementById('s_zod').innerText = data.spouse.zod || "不详";
-                document.getElementById('s_birth').innerText = data.spouse.birth || "不详";
-            } else {
-                sCard.style.display = 'none';
-            }
+    function renderStatus(person, elementId) {
+        const el = document.getElementById(elementId);
+        const death = person && person.death ? String(person.death).trim() : "";
+        if (death && death !== "不详") {
+            el.innerHTML = '<span class="status status-passed">已故 · ' + death + '</span>';
+        } else if (death === "不详") {
+            el.innerHTML = '<span class="status status-passed">已故 · 日期不详</span>';
+        } else {
+            el.innerHTML = '<span class="status status-alive">健在 / 未录入逝世信息</span>';
+        }
+    }
 
-            document.getElementById('common_note').innerText = data.note || "家族血脉，代代相传。";
+    function fillPerson(prefix, person) {
+        document.getElementById(prefix + "_name").innerText = (prefix === "m" ? "📍 " : "💍 ") + formatValue(person.name);
+        document.getElementById(prefix + "_old").innerText = formatValue(person.old);
+        document.getElementById(prefix + "_zod").innerText = formatValue(person.zod);
+        document.getElementById(prefix + "_birth").innerText = formatValue(person.birth);
+        renderStatus(person, prefix + "_status");
+    }
+
+    window.showDetail = function(id) {
+        const data = personData[id] || {
+            main: { name: "信息待核实", old: "无", zod: "不详", birth: "不详" },
+            spouse: null,
+            note: "当前节点暂无详细档案，可后续补充。"
         };
-    </script>
+
+        document.getElementById("hint").style.display = "none";
+        document.getElementById("content").style.display = "block";
+
+        fillPerson("m", data.main);
+
+        const spouseCard = document.getElementById("card_spouse");
+        if (data.spouse && data.spouse.name && data.spouse.name !== "待定") {
+            spouseCard.style.display = "block";
+            fillPerson("s", data.spouse);
+        } else {
+            spouseCard.style.display = "none";
+        }
+
+        document.getElementById("note_text").innerText = data.note || "家族血脉，代代相传。";
+    };
+
+    function searchPerson() {
+        const kw = document.getElementById("searchInput").value.trim();
+        if (!kw) {
+            alert("请输入姓名后再搜索。");
+            return;
+        }
+
+        const entries = Object.entries(personData);
+        const found = entries.find(([id, data]) => {
+            const mainName = data.main && data.main.name ? data.main.name : "";
+            const spouseName = data.spouse && data.spouse.name ? data.spouse.name : "";
+            return mainName.includes(kw) || spouseName.includes(kw);
+        });
+
+        if (found) {
+            showDetail(found[0]);
+        } else {
+            alert("未找到该姓名，请检查输入是否正确。");
+        }
+    }
+
+    function resetPanel() {
+        document.getElementById("hint").style.display = "flex";
+        document.getElementById("content").style.display = "none";
+        document.getElementById("searchInput").value = "";
+    }
+
+    document.getElementById("searchInput").addEventListener("keydown", function(e){
+        if (e.key === "Enter") searchPerson();
+    });
+</script>
 </body>
 </html>
+
