@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>李氏家族电子家谱</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
@@ -17,6 +17,7 @@
             --alive:#2e7d32;
             --passed:#6d4c41;
             --shadow:0 10px 30px rgba(62,39,35,.08);
+            --danger:#c43c2c;
         }
         *{box-sizing:border-box}
         html,body{margin:0;padding:0;height:100%}
@@ -31,13 +32,13 @@
             min-height:100vh;
         }
         .topbar{
-            padding:18px 24px;
+            padding:18px 24px 14px;
             border-bottom:1px solid var(--border);
             background:rgba(255,252,246,.95);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
             position:sticky;
             top:0;
-            z-index:10;
+            z-index:20;
         }
         .topbar-inner{
             max-width:1600px;
@@ -66,10 +67,10 @@
             flex-wrap:wrap;
         }
         .toolbar input{
-            width:260px;
+            width:280px;
             max-width:75vw;
-            padding:10px 12px;
-            border-radius:10px;
+            padding:11px 12px;
+            border-radius:12px;
             border:1px solid var(--border);
             background:#fff;
             font-size:14px;
@@ -81,19 +82,48 @@
         }
         .btn{
             border:none;
-            border-radius:10px;
-            padding:10px 14px;
+            border-radius:12px;
+            padding:11px 14px;
             background:var(--accent);
             color:#fff;
             cursor:pointer;
             font-size:14px;
             transition:.2s ease;
+            white-space:nowrap;
         }
         .btn:hover{background:#71360f}
         .btn.secondary{
             background:#ead8bd;
             color:var(--text);
         }
+        .btn.ghost{
+            background:#fff;
+            color:var(--accent);
+            border:1px solid var(--border);
+        }
+
+        .mobile-tabs{
+            display:none;
+            width:100%;
+            gap:8px;
+            margin-top:10px;
+        }
+        .tab-btn{
+            flex:1;
+            border:none;
+            border-radius:12px;
+            padding:10px 12px;
+            background:#efe2cc;
+            color:#694733;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+        }
+        .tab-btn.active{
+            background:var(--accent);
+            color:#fff;
+        }
+
         .main{
             flex:1;
             display:flex;
@@ -101,7 +131,7 @@
             min-height:0;
         }
         .tree-area{
-            flex:1.85;
+            flex:2.15;
             min-width:0;
             padding:18px;
             overflow:auto;
@@ -121,21 +151,24 @@
             margin:0 0 12px;
             font-size:13px;
             color:#8a7365;
+            line-height:1.8;
         }
         .mermaid{
             width:max-content;
             min-width:100%;
-            padding:20px;
+            padding:24px 240px 180px 24px;
         }
         .mermaid svg{
             max-width:none !important;
             height:auto !important;
+            transform:scale(1.65);
+            transform-origin:top left;
         }
 
         .info-panel{
             flex:1;
             min-width:380px;
-            max-width:520px;
+            max-width:540px;
             background:var(--panel-bg);
             overflow-y:auto;
             padding:22px;
@@ -155,10 +188,11 @@
             text-align:center;
         }
         .panel-subtitle{
-            margin:0 0 18px;
+            margin:0 0 16px;
             text-align:center;
             color:#8b7666;
             font-size:14px;
+            line-height:1.8;
         }
         .hint{
             display:flex;
@@ -174,6 +208,11 @@
             border-radius:18px;
             background:#fffcf6;
         }
+        .quick-actions{
+            display:none;
+            gap:8px;
+            margin-bottom:12px;
+        }
         .couple-container{
             display:grid;
             grid-template-columns:1fr 1fr;
@@ -185,13 +224,67 @@
             padding:16px;
             border-radius:16px;
         }
-        .person-card h3{
-            margin:0 0 12px;
-            color:#9b3025;
-            font-size:18px;
+        .person-header{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            margin-bottom:12px;
             padding-bottom:10px;
             border-bottom:2px solid #eadcc4;
+        }
+        .person-photo-wrap{
+            flex-shrink:0;
+        }
+        .person-photo{
+            width:88px;
+            height:88px;
+            object-fit:cover;
+            border-radius:18px;
+            border:1px solid #e8d4b1;
+            background:#f4ebdb;
+            box-shadow:0 8px 20px rgba(62,39,35,.08);
+            cursor:pointer;
+        }
+        .person-photo:hover{
+            transform:translateY(-1px);
+        }
+        .person-photo-fallback{
+            width:88px;
+            height:88px;
+            border-radius:18px;
+            border:1px solid #e8d4b1;
+            background:linear-gradient(135deg,#f3e5ca,#ead4ad);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:28px;
+            color:var(--accent);
+            font-weight:700;
+            box-shadow:0 8px 20px rgba(62,39,35,.08);
+        }
+        .person-title{
+            min-width:0;
+        }
+        .person-title h3{
+            margin:0 0 8px;
+            color:#9b3025;
+            font-size:18px;
             word-break:break-all;
+        }
+        .person-mini{
+            display:flex;
+            flex-wrap:wrap;
+            gap:6px;
+        }
+        .mini-tag{
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            font-size:12px;
+            border-radius:999px;
+            background:#f1e7d6;
+            padding:4px 9px;
+            color:#765544;
         }
         .field{
             display:flex;
@@ -200,7 +293,7 @@
             padding-bottom:8px;
             border-bottom:1px dotted #e8ddcb;
             font-size:14px;
-            line-height:1.6;
+            line-height:1.7;
         }
         .label{
             width:78px;
@@ -244,7 +337,23 @@
             margin-top:14px;
             font-size:12px;
             color:#9b8a7e;
-            line-height:1.7;
+            line-height:1.8;
+        }
+        .photo-guide{
+            margin-top:12px;
+            padding:12px 14px;
+            background:#fff8ef;
+            border:1px dashed #dfc8a3;
+            border-radius:12px;
+            font-size:12px;
+            color:#7a6559;
+            line-height:1.8;
+        }
+        .photo-guide code{
+            background:#f5ebda;
+            padding:1px 5px;
+            border-radius:6px;
+            font-family:Consolas, monospace;
         }
 
         .node rect, .node polygon, .node circle, .node path{
@@ -255,9 +364,64 @@
         .node:hover polygon,
         .node:hover circle,
         .node:hover path{
-            stroke:#c43c2c !important;
+            stroke:var(--danger) !important;
             stroke-width:2.2px !important;
             filter:drop-shadow(0 3px 5px rgba(196,60,44,.18));
+        }
+
+        .modal{
+            position:fixed;
+            inset:0;
+            background:rgba(20,10,4,.62);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:100;
+            padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+            width:min(92vw,720px);
+            background:#fff;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 18px 40px rgba(0,0,0,.22);
+        }
+        .modal-head{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:14px 16px;
+            border-bottom:1px solid #f1e3ca;
+            background:#fff9f0;
+        }
+        .modal-head h3{
+            margin:0;
+            color:var(--accent);
+            font-size:18px;
+        }
+        .modal-close{
+            border:none;
+            background:#f1e5d0;
+            color:#734521;
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            font-size:18px;
+            cursor:pointer;
+        }
+        .modal-body{
+            padding:14px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:#fff;
+        }
+        .modal-body img{
+            max-width:100%;
+            max-height:76vh;
+            border-radius:16px;
+            object-fit:contain;
         }
 
         @media (max-width: 1080px){
@@ -267,41 +431,95 @@
             .tree-area{
                 border-right:none;
                 border-bottom:3px double var(--border);
-                min-height:52vh;
+                min-height:54vh;
             }
             .info-panel{
                 min-width:0;
                 max-width:none;
             }
         }
-        @media (max-width: 680px){
+        @media (max-width: 820px){
             .topbar{
-                padding:14px 14px;
+                padding:14px 14px 12px;
             }
             .title-wrap h1{
                 font-size:22px;
             }
-            .couple-container{
-                grid-template-columns:1fr;
+            .toolbar{
+                width:100%;
             }
             .toolbar input{
                 width:100%;
+                max-width:none;
+                flex:1 1 100%;
+            }
+            .mobile-tabs{
+                display:flex;
+            }
+            .quick-actions{
+                display:flex;
+            }
+            body.mobile-tree .tree-area{display:block}
+            body.mobile-tree .info-panel{display:none}
+            body.mobile-info .tree-area{display:none}
+            body.mobile-info .info-panel{display:block}
+            .tree-area,
+            .info-panel{
+                min-height:calc(100vh - 170px);
+            }
+            .tree-shell{
+                min-width:100%;
+                width:max-content;
+            }
+        }
+        @media (max-width: 680px){
+            .couple-container{
+                grid-template-columns:1fr;
+            }
+            .panel-card{
+                padding:14px;
+            }
+            .person-card{
+                padding:14px;
+            }
+            .person-header{
+                align-items:flex-start;
+            }
+            .person-photo,
+            .person-photo-fallback{
+                width:78px;
+                height:78px;
+                border-radius:16px;
+            }
+            .hint{
+                min-height:220px;
+                font-size:16px;
+            }
+            .field{
+                font-size:13px;
+            }
+            .label{
+                width:72px;
             }
         }
     </style>
 </head>
-<body>
+<body class="mobile-tree">
 <div class="app">
     <header class="topbar">
         <div class="topbar-inner">
             <div class="title-wrap">
                 <h1>李氏家族电子家谱</h1>
-                <p>点击左侧家谱中的姓名，即可在右侧查看详细档案。支持姓名搜索。</p>
+                <p>支持姓名搜索、照片展示、手机端家谱/档案切换。点击人物即可查看详细档案。</p>
             </div>
             <div class="toolbar">
                 <input id="searchInput" type="text" placeholder="输入姓名，例如：李继军 / 王萍" />
                 <button class="btn" onclick="searchPerson()">搜索</button>
                 <button class="btn secondary" onclick="resetPanel()">清空右侧</button>
+            </div>
+            <div class="mobile-tabs">
+                <button id="tabTree" class="tab-btn active" onclick="setMobileView('tree')">家谱</button>
+                <button id="tabInfo" class="tab-btn" onclick="setMobileView('info')">档案</button>
             </div>
         </div>
     </header>
@@ -309,7 +527,10 @@
     <main class="main">
         <section class="tree-area">
             <div class="tree-shell">
-                <p class="tree-tip">提示：家谱较宽，可左右滚动；点击任一节点即可查看对应成员信息。</p>
+                <p class="tree-tip">
+                    提示：家谱较宽，可左右滚动；手机上可先看“家谱”，点人物后会自动切换到“档案”页。<br />
+                    若想加入照片，可直接在下方 <code>personData</code> 中填写 <code>photo</code>，也可把照片按默认规则命名后放入 <code>photos</code> 文件夹，例如：<code>photos/SH1-main.jpg</code>、<code>photos/SH1-spouse.jpg</code>
+                </p>
                 <div class="mermaid">
 flowchart TD
     %% --- 第一代 ---
@@ -438,8 +659,13 @@ flowchart TD
 
         <aside class="info-panel">
             <div class="panel-card">
+                <div class="quick-actions">
+                    <button class="btn ghost" onclick="setMobileView('tree')">返回家谱</button>
+                    <button class="btn secondary" onclick="resetPanel()">清空档案</button>
+                </div>
+
                 <h2 class="panel-title">家族成员档案</h2>
-                <p class="panel-subtitle">当前为电子谱示意版，可继续补充生平、排行、迁徙、职业等信息。</p>
+                <p class="panel-subtitle">当前为电子谱单文件版，可继续补充排行、职业、照片、生平、迁徙、家风故事等信息。</p>
 
                 <div id="hint" class="hint">
                     📜 请点击左侧树状图中的姓名<br />
@@ -449,16 +675,38 @@ flowchart TD
                 <div id="content" style="display:none;">
                     <div class="couple-container">
                         <div class="person-card" id="card_main">
-                            <h3 id="m_name">📍 主成员</h3>
+                            <div class="person-header">
+                                <div class="person-photo-wrap" id="m_photo_wrap"></div>
+                                <div class="person-title">
+                                    <h3 id="m_name">📍 主成员</h3>
+                                    <div class="person-mini">
+                                        <span class="mini-tag" id="m_rank_tag">排行：-</span>
+                                        <span class="mini-tag" id="m_job_tag">职业：-</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="field"><span class="label">曾用名</span><span id="m_old">-</span></div>
+                            <div class="field"><span class="label">排行</span><span id="m_rank">-</span></div>
+                            <div class="field"><span class="label">职业</span><span id="m_job">-</span></div>
                             <div class="field"><span class="label">属相</span><span id="m_zod">-</span></div>
                             <div class="field"><span class="label">出生日期</span><span id="m_birth">-</span></div>
                             <div class="field"><span class="label">状态</span><span id="m_status">-</span></div>
                         </div>
 
                         <div class="person-card" id="card_spouse">
-                            <h3 id="s_name">💍 配偶</h3>
+                            <div class="person-header">
+                                <div class="person-photo-wrap" id="s_photo_wrap"></div>
+                                <div class="person-title">
+                                    <h3 id="s_name">💍 配偶</h3>
+                                    <div class="person-mini">
+                                        <span class="mini-tag" id="s_rank_tag">排行：-</span>
+                                        <span class="mini-tag" id="s_job_tag">职业：-</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="field"><span class="label">曾用名</span><span id="s_old">-</span></div>
+                            <div class="field"><span class="label">排行</span><span id="s_rank">-</span></div>
+                            <div class="field"><span class="label">职业</span><span id="s_job">-</span></div>
                             <div class="field"><span class="label">属相</span><span id="s_zod">-</span></div>
                             <div class="field"><span class="label">出生日期</span><span id="s_birth">-</span></div>
                             <div class="field"><span class="label">状态</span><span id="s_status">-</span></div>
@@ -469,221 +717,261 @@ flowchart TD
                         <div class="note-title">备注</div>
                         <div id="note_text">家族血脉，代代相传。</div>
                     </div>
+
+                    <div class="photo-guide">
+                        照片添加方式：把人物照片放进与 <code>index.html</code> 同级的 <code>photos</code> 文件夹，再在数据里加入
+                        <code>photo:"photos/姓名.jpg"</code>。也支持网络图片地址或 Base64 图片。点击照片可放大查看。
+                    </div>
                 </div>
 
                 <div class="footer-note">
-                    说明：本页面为单文件版 HTML。若首次打开无法显示树图，请确认当前设备可联网，以便加载 Mermaid 图形库。
+                    说明：本页面为单文件版 HTML。若首次打开无法显示家谱，请确认当前设备可联网，以便加载 Mermaid 图形库。
                 </div>
             </div>
         </aside>
     </main>
 </div>
 
+<div id="photoModal" class="modal" onclick="closePhotoModal(event)">
+    <div class="modal-content">
+        <div class="modal-head">
+            <h3 id="modalTitle">人物照片</h3>
+            <button class="modal-close" onclick="closePhotoModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <img id="modalImg" src="" alt="人物照片" />
+        </div>
+    </div>
+</div>
+
 <script>
+    /*
+      加照片示例：
+      "SH1": {
+          main: {
+              name: "李成",
+              old: "海娃",
+              rank: "长子",
+              job: "教师",
+              photo: "photos/li-cheng.jpg",
+              zod: "蛇",
+              birth: "1953.10.20"
+          },
+          spouse: {
+              name: "周秀英",
+              old: "无",
+              rank: "长媳",
+              job: "务农",
+              photo: "photos/zhou-xiuying.jpg",
+              zod: "鼠",
+              birth: "1959.10.28"
+          }
+      }
+    */
     const personData = {
         "S1": {
-            main: { name: "李世和", old: "福生", zod: "牛", birth: "1926.06.22", death: "不详" },
-            spouse: { name: "张玉莲", old: "无", zod: "猴", birth: "1932.09.12" },
-            note: "一世祖信息已录入，可继续补充籍贯、排行、生平事迹。"
+            main: { name: "李世和", photo: "", old: "福生", rank: "一世祖", job: "待补充", zod: "牛", birth: "1926.06.22", death: "不详" },
+            spouse: { name: "张玉莲", photo: "", old: "无", rank: "一世祖配偶", job: "待补充", zod: "猴", birth: "1932.09.12" },
+            note: "一世祖信息已录入，可继续补充籍贯、排行、生平事迹、老照片等内容。"
         },
         "S2": {
-            main: { name: "李世忠", old: "将生", zod: "不详", birth: "不详", death: "不详" },
-            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" },
+            main: { name: "李世忠", photo: "", old: "将生", rank: "一世", job: "待补充", zod: "不详", birth: "不详", death: "不详" },
+            spouse: { name: "不详", photo: "", old: "不详", rank: "待核实", job: "待补充", zod: "不详", birth: "不详" },
             note: "配偶信息待进一步核实。"
         },
         "S3": {
-            main: { name: "李世海", old: "土生", zod: "不详", birth: "不详", death: "不详" },
-            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" },
+            main: { name: "李世海", photo: "", old: "土生", rank: "一世", job: "待补充", zod: "不详", birth: "不详", death: "不详" },
+            spouse: { name: "不详", photo: "", old: "不详", rank: "待核实", job: "待补充", zod: "不详", birth: "不详" },
             note: "配偶信息待进一步核实。"
         },
 
         "SH1": {
-            main: { name: "李成", old: "海娃", zod: "蛇", birth: "1953.10.20" },
-            spouse: { name: "周秀英", old: "无", zod: "鼠", birth: "1959.10.28" }
+            main: { name: "李成", photo: "", old: "海娃", rank: "长子", job: "待补充", zod: "蛇", birth: "1953.10.20" },
+            spouse: { name: "周秀英", photo: "", old: "无", rank: "长媳", job: "待补充", zod: "鼠", birth: "1959.10.28" }
         },
         "SH2": {
-            main: { name: "李明", old: "法海", zod: "羊", birth: "1955.07.25" },
-            spouse: { name: "路正琴", old: "无", zod: "虎", birth: "1962.12.27" }
+            main: { name: "李明", photo: "", old: "法海", rank: "次子", job: "待补充", zod: "羊", birth: "1955.07.25" },
+            spouse: { name: "路正琴", photo: "", old: "无", rank: "次媳", job: "待补充", zod: "虎", birth: "1962.12.27" }
         },
         "SH3": {
-            main: { name: "李裕", old: "禄海", zod: "鸡", birth: "1957.06.19", death: "2018.10.29" },
-            spouse: { name: "王秀兰", old: "无", zod: "龙", birth: "1964.12.15" }
+            main: { name: "李裕", photo: "", old: "禄海", rank: "三子", job: "待补充", zod: "鸡", birth: "1957.06.19", death: "2018.10.29" },
+            spouse: { name: "王秀兰", photo: "", old: "无", rank: "三媳", job: "待补充", zod: "龙", birth: "1964.12.15" }
         },
         "SH4": {
-            main: { name: "李荣", old: "顺禄", zod: "虎", birth: "1962.02.30" },
-            spouse: { name: "王淑琴", old: "无", zod: "马", birth: "1966.09.08" }
+            main: { name: "李荣", photo: "", old: "顺禄", rank: "四子", job: "待补充", zod: "虎", birth: "1962.02.30" },
+            spouse: { name: "王淑琴", photo: "", old: "无", rank: "四媳", job: "待补充", zod: "马", birth: "1966.09.08" }
         },
         "SH5": {
-            main: { name: "李华", old: "蛟娃", zod: "龙", birth: "1964.08.19" },
-            spouse: { name: "王萍", old: "无", zod: "狗", birth: "1969.12.05", death: "2015.06.26" }
+            main: { name: "李华", photo: "", old: "蛟娃", rank: "五子", job: "待补充", zod: "龙", birth: "1964.08.19" },
+            spouse: { name: "王萍", photo: "", old: "无", rank: "五媳", job: "待补充", zod: "狗", birth: "1969.12.05", death: "2015.06.26" }
         },
 
         "SZ1": {
-            main: { name: "李学文", old: "写写", zod: "牛", birth: "1949.04.05" },
-            spouse: { name: "董壁莲", old: "无", zod: "羊", birth: "1955.04.30" }
+            main: { name: "李学文", photo: "", old: "写写", rank: "二世", job: "待补充", zod: "牛", birth: "1949.04.05" },
+            spouse: { name: "董壁莲", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "羊", birth: "1955.04.30" }
         },
         "SZ2": {
-            main: { name: "李孝文", old: "自娃", zod: "蛇", birth: "1953.08.16" },
-            spouse: { name: "周玉梅", old: "无", zod: "羊", birth: "1953.07.20" }
+            main: { name: "李孝文", photo: "", old: "自娃", rank: "二世", job: "待补充", zod: "蛇", birth: "1953.08.16" },
+            spouse: { name: "周玉梅", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "羊", birth: "1953.07.20" }
         },
         "SZ3": {
-            main: { name: "李学民", old: "禄娃", zod: "羊", birth: "1955.08.05" },
-            spouse: { name: "姚菊香", old: "无", zod: "牛", birth: "1961.11.11" }
+            main: { name: "李学民", photo: "", old: "禄娃", rank: "二世", job: "待补充", zod: "羊", birth: "1955.08.05" },
+            spouse: { name: "姚菊香", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "牛", birth: "1961.11.11" }
         },
         "SA1": {
-            main: { name: "李鹏", old: "尚写", zod: "龙", birth: "1952.01.29", death: "2017.12.30" },
-            spouse: { name: "罗桂英", old: "无", zod: "马", birth: "1952.04.28", death: "不详" }
+            main: { name: "李鹏", photo: "", old: "尚写", rank: "二世", job: "待补充", zod: "龙", birth: "1952.01.29", death: "2017.12.30" },
+            spouse: { name: "罗桂英", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "马", birth: "1952.04.28", death: "不详" }
         },
 
         "G3_C1": {
-            main: { name: "李继军", old: "军红", zod: "羊", birth: "1979.06.17" },
-            spouse: { name: "庞莉果", old: "无", zod: "羊", birth: "1979.09.18" }
+            main: { name: "李继军", photo: "", old: "军红", rank: "三世", job: "待补充", zod: "羊", birth: "1979.06.17" },
+            spouse: { name: "庞莉果", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "羊", birth: "1979.09.18" }
         },
         "G3_C2": {
-            main: { name: "李继强", old: "小军", zod: "牛", birth: "1973.12.14", death: "2019.02.18" },
+            main: { name: "李继强", photo: "", old: "小军", rank: "三世", job: "待补充", zod: "牛", birth: "1973.12.14", death: "2019.02.18" },
             spouse: null,
             note: "别名：丁三鬼。"
         },
         "G3_M1": {
-            main: { name: "李志龙", old: "六一", zod: "牛", birth: "1985.03.23" },
-            spouse: { name: "雒连霞", old: "无", zod: "兔", birth: "1987.06.18" }
+            main: { name: "李志龙", photo: "", old: "六一", rank: "三世", job: "待补充", zod: "牛", birth: "1985.03.23" },
+            spouse: { name: "雒连霞", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "兔", birth: "1987.06.18" }
         },
         "G3_M2": {
-            main: { name: "李志岩", old: "双六", zod: "兔", birth: "1987.08.17" },
-            spouse: { name: "王晓蕾", old: "无", zod: "虎", birth: "1986.02.23" }
+            main: { name: "李志岩", photo: "", old: "双六", rank: "三世", job: "待补充", zod: "兔", birth: "1987.08.17" },
+            spouse: { name: "王晓蕾", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "虎", birth: "1986.02.23" }
         },
         "G3_Y1": {
-            main: { name: "李小红", old: "小红", zod: "兔", birth: "1987.04.16" },
-            spouse: { name: "王遇霞", old: "无", zod: "羊", birth: "1991.03.13" }
+            main: { name: "李小红", photo: "", old: "小红", rank: "三世", job: "待补充", zod: "兔", birth: "1987.04.16" },
+            spouse: { name: "王遇霞", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "羊", birth: "1991.03.13" }
         },
         "G3_Y2": {
-            main: { name: "李继萍", old: "丽丽", zod: "蛇", birth: "1989.09.04" },
+            main: { name: "李继萍", photo: "", old: "丽丽", rank: "三世", job: "待补充", zod: "蛇", birth: "1989.09.04" },
             spouse: null
         },
         "G3_Y3": {
-            main: { name: "李瑞萍", old: "伟丽", zod: "羊", birth: "1991.10.05" },
+            main: { name: "李瑞萍", photo: "", old: "伟丽", rank: "三世", job: "待补充", zod: "羊", birth: "1991.10.05" },
             spouse: null
         },
         "G3_R1": {
-            main: { name: "李志辉", old: "亚亭", zod: "羊", birth: "1991.04.16" },
-            spouse: { name: "何小利", old: "无", zod: "鸡", birth: "1993.08.13" }
+            main: { name: "李志辉", photo: "", old: "亚亭", rank: "三世", job: "待补充", zod: "羊", birth: "1991.04.16" },
+            spouse: { name: "何小利", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "鸡", birth: "1993.08.13" }
         },
         "G3_R2": {
-            main: { name: "李志胜", old: "刚刚", zod: "猴", birth: "1992.10.23" },
-            spouse: { name: "王娇", old: "无", zod: "不详", birth: "不详" }
+            main: { name: "李志胜", photo: "", old: "刚刚", rank: "三世", job: "待补充", zod: "猴", birth: "1992.10.23" },
+            spouse: { name: "王娇", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "不详", birth: "不详" }
         },
         "G3_R3": {
-            main: { name: "李艳艳", old: "艳艳", zod: "不详", birth: "不详" },
-            spouse: { name: "不详", old: "不详", zod: "不详", birth: "不详" }
+            main: { name: "李艳艳", photo: "", old: "艳艳", rank: "三世", job: "待补充", zod: "不详", birth: "不详" },
+            spouse: { name: "不详", photo: "", old: "不详", rank: "待核实", job: "待补充", zod: "不详", birth: "不详" }
         },
         "G3_H1": {
-            main: { name: "李志博", old: "强娃", zod: "猪", birth: "1995.03.17" },
-            spouse: { name: "杨韦唯", old: "无", zod: "不详", birth: "不详" }
+            main: { name: "李志博", photo: "", old: "强娃", rank: "三世", job: "待补充", zod: "猪", birth: "1995.03.17" },
+            spouse: { name: "杨韦唯", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "不详", birth: "不详" }
         },
         "G3_H2": {
-            main: { name: "李志渊", old: "对对", zod: "虎", birth: "1998.02.04" },
+            main: { name: "李志渊", photo: "", old: "对对", rank: "三世", job: "待补充", zod: "虎", birth: "1998.02.04" },
             spouse: null
         },
         "G3_H3": {
-            main: { name: "李继芳", old: "伟艳", zod: "猴", birth: "1992.03.11" },
+            main: { name: "李继芳", photo: "", old: "伟艳", rank: "三世", job: "待补充", zod: "猴", birth: "1992.03.11" },
             spouse: null
         },
         "G3_ZW1": {
-            main: { name: "李缠军", old: "缠军", zod: "鼠", birth: "1984.05.02" },
-            spouse: { name: "姚小红", old: "无", zod: "猪", birth: "1983.06.11" }
+            main: { name: "李缠军", photo: "", old: "缠军", rank: "三世", job: "待补充", zod: "鼠", birth: "1984.05.02" },
+            spouse: { name: "姚小红", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "猪", birth: "1983.06.11" }
         },
         "G3_XW1": {
-            main: { name: "李军强", old: "军强", zod: "狗", birth: "1982.05.25" },
-            spouse: { name: "王兵梅", old: "无", zod: "兔", birth: "1987.09.15" }
+            main: { name: "李军强", photo: "", old: "军强", rank: "三世", job: "待补充", zod: "狗", birth: "1982.05.25" },
+            spouse: { name: "王兵梅", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "兔", birth: "1987.09.15" }
         },
         "G3_XM1": {
-            main: { name: "李渊博", old: "渊博", zod: "鸡", birth: "2005.07.15" },
+            main: { name: "李渊博", photo: "", old: "渊博", rank: "三世", job: "待补充", zod: "鸡", birth: "2005.07.15" },
             spouse: null
         },
         "G3_XM2": {
-            main: { name: "李宏博", old: "无", zod: "狗", birth: "1994.10.02" },
+            main: { name: "李宏博", photo: "", old: "无", rank: "三世", job: "待补充", zod: "狗", birth: "1994.10.02" },
             spouse: null
         },
         "G3_P1": {
-            main: { name: "李红红", old: "红红", zod: "牛", birth: "1973.12.14" },
-            spouse: { name: "马顺会", old: "无", zod: "龙", birth: "1976.08.22" }
+            main: { name: "李红红", photo: "", old: "红红", rank: "三世", job: "待补充", zod: "牛", birth: "1973.12.14" },
+            spouse: { name: "马顺会", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "龙", birth: "1976.08.22" }
         },
         "G3_P2": {
-            main: { name: "李继仁", old: "根红", zod: "龙", birth: "1976.10.21" },
-            spouse: { name: "王瑞霞", old: "无", zod: "龙", birth: "1976.10.20" }
+            main: { name: "李继仁", photo: "", old: "根红", rank: "三世", job: "待补充", zod: "龙", birth: "1976.10.21" },
+            spouse: { name: "王瑞霞", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "龙", birth: "1976.10.20" }
         },
 
         "G4_P1": {
-            main: { name: "李祥兵", old: "广兵", zod: "猪", birth: "1995.08.13" },
+            main: { name: "李祥兵", photo: "", old: "广兵", rank: "四世", job: "待补充", zod: "猪", birth: "1995.08.13" },
             spouse: null
         },
         "G4_P2": {
-            main: { name: "李敏", old: "彤彤", zod: "兔", birth: "1999.10.07" },
+            main: { name: "李敏", photo: "", old: "彤彤", rank: "四世", job: "待补充", zod: "兔", birth: "1999.10.07" },
             spouse: null
         },
         "G4_P3": {
-            main: { name: "李娜", old: "梦娟", zod: "虎", birth: "1998.08.29" },
+            main: { name: "李娜", photo: "", old: "梦娟", rank: "四世", job: "待补充", zod: "虎", birth: "1998.08.29" },
             spouse: null
         },
         "G4_P4": {
-            main: { name: "李翔", old: "飞飞", zod: "蛇", birth: "2001.07.21" },
-            spouse: { name: "李巧转", old: "巧转", zod: "不详", birth: "不详" }
+            main: { name: "李翔", photo: "", old: "飞飞", rank: "四世", job: "待补充", zod: "蛇", birth: "2001.07.21" },
+            spouse: { name: "李巧转", photo: "", old: "巧转", rank: "待补充", job: "待补充", zod: "不详", birth: "不详" }
         },
         "G4_C1": {
-            main: { name: "李腾飞", old: "腾飞", zod: "兔", birth: "1999.10.10" },
-            spouse: { name: "王亚文", old: "亚文", zod: "蛇", birth: "2001.10.28" }
+            main: { name: "李腾飞", photo: "", old: "腾飞", rank: "四世", job: "待补充", zod: "兔", birth: "1999.10.10" },
+            spouse: { name: "王亚文", photo: "", old: "亚文", rank: "待补充", job: "待补充", zod: "蛇", birth: "2001.10.28" }
         },
         "G4_Y1": {
-            main: { name: "李昕", old: "无", zod: "鼠", birth: "2020.01.23" },
+            main: { name: "李昕", photo: "", old: "无", rank: "四世", job: "待补充", zod: "鼠", birth: "2020.01.23" },
             spouse: null
         },
         "G4_XW1": {
-            main: { name: "李蕾", old: "无", zod: "狗", birth: "2006.10.19" },
+            main: { name: "李蕾", photo: "", old: "无", rank: "四世", job: "待补充", zod: "狗", birth: "2006.10.19" },
             spouse: null
         },
         "G4_XW2": {
-            main: { name: "李璐", old: "无", zod: "马", birth: "2014.09.13" },
+            main: { name: "李璐", photo: "", old: "无", rank: "四世", job: "待补充", zod: "马", birth: "2014.09.13" },
             spouse: null
         },
         "G4_R1": {
-            main: { name: "李泽煦", old: "无", zod: "鼠", birth: "2020.07.22" },
+            main: { name: "李泽煦", photo: "", old: "无", rank: "四世", job: "待补充", zod: "鼠", birth: "2020.07.22" },
             spouse: null
         },
         "G4_R2": {
-            main: { name: "李泽琪", old: "无", zod: "不详", birth: "不详" },
+            main: { name: "李泽琪", photo: "", old: "无", rank: "四世", job: "待补充", zod: "不详", birth: "不详" },
             spouse: null
         },
         "G4_M1": {
-            main: { name: "李彦辰", old: "无", zod: "羊", birth: "2015.01.27" },
+            main: { name: "李彦辰", photo: "", old: "无", rank: "四世", job: "待补充", zod: "羊", birth: "2015.01.27" },
             spouse: null
         },
         "G4_M2": {
-            main: { name: "李彦达", old: "无", zod: "猪", birth: "2019.01.04" },
+            main: { name: "李彦达", photo: "", old: "无", rank: "四世", job: "待补充", zod: "猪", birth: "2019.01.04" },
             spouse: null
         },
         "G4_M3": {
-            main: { name: "李彦纬", old: "无", zod: "马", birth: "2014.10.29" },
+            main: { name: "李彦纬", photo: "", old: "无", rank: "四世", job: "待补充", zod: "马", birth: "2014.10.29" },
             spouse: null
         },
         "G4_M4": {
-            main: { name: "李彦哲", old: "无", zod: "狗", birth: "2018.11.30" },
+            main: { name: "李彦哲", photo: "", old: "无", rank: "四世", job: "待补充", zod: "狗", birth: "2018.11.30" },
             spouse: null
         },
         "G4_Z1": {
-            main: { name: "李凯", old: "凯凯", zod: "鸡", birth: "2006.06.02" },
+            main: { name: "李凯", photo: "", old: "凯凯", rank: "四世", job: "待补充", zod: "鸡", birth: "2006.06.02" },
             spouse: null
         },
         "G4_Z2": {
-            main: { name: "李洁", old: "无", zod: "不详", birth: "不详" },
+            main: { name: "李洁", photo: "", old: "无", rank: "四世", job: "待补充", zod: "不详", birth: "不详" },
             spouse: null
         },
 
         "G5_1": {
-            main: { name: "李钰涵", old: "无", zod: "不详", birth: "不详" },
+            main: { name: "李钰涵", photo: "", old: "无", rank: "五世", job: "待补充", zod: "虎", birth: "2022.10.06" },
             spouse: null
         },
         "G5_2": {
-            main: { name: "李钰渲", old: "无", zod: "不详", birth: "不详" },
+            main: { name: "李钰渲", photo: "", old: "无", rank: "五世", job: "待补充", zod: "龙", birth: "2024.05.29" },
             spouse: null
         }
     };
@@ -714,6 +1002,19 @@ flowchart TD
         return value && String(value).trim() ? value : "不详";
     }
 
+    function isMobileLayout() {
+        return window.innerWidth <= 820;
+    }
+
+    function setMobileView(view) {
+        if (!isMobileLayout()) return;
+        document.body.classList.remove("mobile-tree", "mobile-info");
+        document.body.classList.add(view === "info" ? "mobile-info" : "mobile-tree");
+
+        document.getElementById("tabTree").classList.toggle("active", view !== "info");
+        document.getElementById("tabInfo").classList.toggle("active", view === "info");
+    }
+
     function renderStatus(person, elementId) {
         const el = document.getElementById(elementId);
         const death = person && person.death ? String(person.death).trim() : "";
@@ -726,17 +1027,47 @@ flowchart TD
         }
     }
 
-    function fillPerson(prefix, person) {
+    function getInitial(name) {
+        const text = formatValue(name);
+        return text && text !== "不详" ? text.slice(0, 1) : "李";
+    }
+
+    function getDefaultPhotoPath(personId, role) {
+        if (!personId) return "";
+        return "photos/" + personId + "-" + role + ".jpg";
+    }
+
+    function renderPhoto(prefix, person, personId, role) {
+        const wrap = document.getElementById(prefix + "_photo_wrap");
+        const name = person && person.name ? person.name : "人物";
+        const customPhoto = person && person.photo ? String(person.photo).trim() : "";
+        const fallbackPhoto = getDefaultPhotoPath(personId, role);
+        const photo = customPhoto || fallbackPhoto;
+
+        if (photo) {
+            wrap.innerHTML = '<img class="person-photo" src="' + photo + '" alt="' + name + '照片" onclick="openPhotoModal(\'' + photo.replace(/'/g, "\\'") + '\', \'' + name.replace(/'/g, "\\'") + '\')" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" />'
+                + '<div class="person-photo-fallback" style="display:none;">' + getInitial(name) + '</div>';
+        } else {
+            wrap.innerHTML = '<div class="person-photo-fallback">' + getInitial(name) + '</div>';
+        }
+    }
+
+    function fillPerson(prefix, person, personId, role) {
         document.getElementById(prefix + "_name").innerText = (prefix === "m" ? "📍 " : "💍 ") + formatValue(person.name);
         document.getElementById(prefix + "_old").innerText = formatValue(person.old);
+        document.getElementById(prefix + "_rank").innerText = person.rank && String(person.rank).trim() ? person.rank : "待补充";
+        document.getElementById(prefix + "_job").innerText = person.job && String(person.job).trim() ? person.job : "待补充";
         document.getElementById(prefix + "_zod").innerText = formatValue(person.zod);
         document.getElementById(prefix + "_birth").innerText = formatValue(person.birth);
+        document.getElementById(prefix + "_rank_tag").innerText = "排行：" + (person.rank && String(person.rank).trim() ? person.rank : "待补充");
+        document.getElementById(prefix + "_job_tag").innerText = "职业：" + (person.job && String(person.job).trim() ? person.job : "待补充");
         renderStatus(person, prefix + "_status");
+        renderPhoto(prefix, person, personId, role);
     }
 
     window.showDetail = function(id) {
         const data = personData[id] || {
-            main: { name: "信息待核实", old: "无", zod: "不详", birth: "不详" },
+            main: { name: "信息待核实", photo: "", old: "无", rank: "待补充", job: "待补充", zod: "不详", birth: "不详" },
             spouse: null,
             note: "当前节点暂无详细档案，可后续补充。"
         };
@@ -744,17 +1075,22 @@ flowchart TD
         document.getElementById("hint").style.display = "none";
         document.getElementById("content").style.display = "block";
 
-        fillPerson("m", data.main);
+        fillPerson("m", data.main, id, "main");
 
         const spouseCard = document.getElementById("card_spouse");
         if (data.spouse && data.spouse.name && data.spouse.name !== "待定") {
             spouseCard.style.display = "block";
-            fillPerson("s", data.spouse);
+            fillPerson("s", data.spouse, id, "spouse");
         } else {
             spouseCard.style.display = "none";
         }
 
         document.getElementById("note_text").innerText = data.note || "家族血脉，代代相传。";
+
+        if (isMobileLayout()) {
+            setMobileView("info");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
     };
 
     function searchPerson() {
@@ -782,12 +1118,42 @@ flowchart TD
         document.getElementById("hint").style.display = "flex";
         document.getElementById("content").style.display = "none";
         document.getElementById("searchInput").value = "";
+        if (isMobileLayout()) {
+            setMobileView("tree");
+        }
+    }
+
+    function openPhotoModal(src, name) {
+        if (!src) return;
+        document.getElementById("modalImg").src = src;
+        document.getElementById("modalTitle").innerText = (name || "人物") + " 照片";
+        document.getElementById("photoModal").classList.add("show");
+    }
+
+    function closePhotoModal(event) {
+        if (event && event.target && !event.target.classList.contains("modal")) return;
+        document.getElementById("photoModal").classList.remove("show");
+        document.getElementById("modalImg").src = "";
     }
 
     document.getElementById("searchInput").addEventListener("keydown", function(e){
         if (e.key === "Enter") searchPerson();
     });
+
+    window.addEventListener("resize", function(){
+        if (!isMobileLayout()) {
+            document.body.classList.remove("mobile-tree", "mobile-info");
+        } else if (!document.body.classList.contains("mobile-tree") && !document.body.classList.contains("mobile-info")) {
+            document.body.classList.add("mobile-tree");
+            setMobileView("tree");
+        }
+    });
+
+    if (isMobileLayout()) {
+        setMobileView("tree");
+    } else {
+        document.body.classList.remove("mobile-tree", "mobile-info");
+    }
 </script>
 </body>
 </html>
-
